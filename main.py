@@ -266,8 +266,6 @@ class MyWindow(QMainWindow):
         mirrorHorizontalAction = QAction(
             QtGui.QIcon(':res/mirror_horizontal.png'), 'Mirror Horizontal',
             self)
-            #QtGui.QIcon(':res/document-new-symbolic.png'), 'Mirror Horizontal',
-            #self)
         mirrorHorizontalAction.triggered.connect(self.mirrorHorizontalImage)
 
         mirrorVerticalAction = QAction(
@@ -423,6 +421,7 @@ class MyWindow(QMainWindow):
 
 
 def main():
+    
     app = QApplication(sys.argv)
     # Afficher les icons dans les menus
     app.setAttribute(QtCore.Qt.AA_DontShowIconsInMenus, False)

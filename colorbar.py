@@ -10,7 +10,9 @@ from PyQt5.QtWidgets import QWidget, QColorDialog
 
 
 class ColorRect(QtCore.QRect):
-
+    """
+    Color Cell Rectangle
+    """
     color = QtGui.QColor(0, 0, 0, 0)
 
     def __init__(self, c):
@@ -37,7 +39,7 @@ class ColorRect(QtCore.QRect):
 
 class MyColorBar(QWidget):
     '''
-    classdocs
+    Colors palette
     '''
 
     foreColorChanged = QtCore.pyqtSignal(QtGui.QColor)

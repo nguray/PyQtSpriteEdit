@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QWidget
 
 class SpriteBar(QWidget):
     '''
-    classdocs
+    Sprites palette
     '''
 
     spriteChanged = QtCore.pyqtSignal()
@@ -79,9 +79,8 @@ class SpriteBar(QWidget):
         size = self.size()
         w = size.width()
         centerX = w / 2
-        for i in range(0, self.nb_cells):
-            if (self.list_sprites[i] is not None):
-                s = self.list_sprites[i]
+        for i,s in enumerate(self.list_sprites):
+            if s!=None:
                 x = centerX - s.width() / 2
                 y = i * self.cell_size + self.cell_size/2 - s.height()/2 + 4
                 qp.drawImage(QtCore.QPoint(int(x), int(y)), s)
