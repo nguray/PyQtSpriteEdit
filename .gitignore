@@ -1,4 +1,4 @@
 build/
-build/main
+build/main/
 dist/
 *.exe
