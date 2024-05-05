@@ -1,0 +1,11 @@
+{
+    "python.pythonPath": "C:\\msys64\\mingw64\\bin\\python.exe",
+    "pyqt-integration.qtdesigner.path": "C:\\Qt\\5.15.2\\mingw81_64\\bin\\designer.exe",
+    "pyqt-integration.pyuic.cmd": "C:\\Python37\\Scripts\\pyuic5.exe",
+    "python.autoComplete.addBrackets": true,
+    "python.formatting.provider": "yapf",
+    "python.analysis.memory.keepLibraryAst": true,
+    "python.analysis.memory.keepLibraryLocalVariables": true,
+    "python.analysis.completeFunctionParens": true
+   
+}

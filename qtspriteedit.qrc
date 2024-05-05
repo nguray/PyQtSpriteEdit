@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/EllipseIcon.png</file>
+        <file>res/FlipHorizontalyIcon.png</file>
+        <file>res/FlipVerticalyIcon.png</file>
+        <file>res/FloodFillIcon.png</file>
+        <file>res/PauseToolIcon.png</file>
+        <file>res/PencilIcon.png</file>
+        <file>res/PickColor.png</file>
+        <file>res/PlayToolIcon.png</file>
+        <file>res/RectangleIcon.png</file>
+        <file>res/SelectBoxIcon.png</file>
+        <file>res/Swing90LeftIcon.png</file>
+        <file>res/Swing90RightIcon.png</file>
+        <file>res/document-new.png</file>
+        <file>res/document-open.png</file>
+        <file>res/document-save.png</file>
+        <file>res/document-save-as.png</file>
+        <file>res/process-stop.png</file>
+        <file>res/edit-copy.png</file>
+        <file>res/edit-cut.png</file>
+        <file>res/edit-paste.png</file>
+        <file>res/edit-undo.png</file>
+        <file>res/mirror_horizontal.png</file>
+        <file>res/mirror_vertical.png</file>
+        <file>res/rotate_90_clockwise.png</file>
+        <file>res/rotate_90_anticlockwise.png</file>
+        <file>res/help-browser.png</file>
+        <file>res/SelectRect.png</file>
+        <file>res/Pencil.png</file>
+        <file>res/Pipet.png</file>
+        <file>res/DrawLine.png</file>
+        <file>res/DrawRectangle.png</file>
+        <file>res/DrawEllipse.png</file>
+        <file>res/Filler.png</file>
+    </qresource>
+</RCC>
