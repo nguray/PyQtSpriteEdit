@@ -99,6 +99,7 @@ class SpriteBar(QWidget):
         self.list_sprites_names[self.current_sprite] = fileName
         s.save(fileName, "PNG")
 
+
     def saveSprite(self):
         '''
         '''
@@ -106,16 +107,17 @@ class SpriteBar(QWidget):
         fileName = self.list_sprites_names[self.current_sprite]
         s.save(fileName, "PNG")
 
+
     def drawSelectMark(self, qp):
         '''
         '''
         size = self.size()
-        w = size.width()
-        xLeft = int(w / 2 - self.cell_size / 2)
-        xRight = xLeft + self.cell_size
+        w = size.width() - 1
+        xLeft = 0
+        xRight = xLeft + w
         pen = QtGui.QPen(QtGui.QColor(20, 20, 255), 1, QtCore.Qt.SolidLine)
         qp.setPen(pen)
-        yTop = self.current_sprite * self.cell_size + 2
+        yTop = self.current_sprite * self.cell_size
         yBottom = yTop + self.cell_size
         # -- Top Left
         qp.drawLine(xLeft, yTop, xLeft, yTop+4)
@@ -126,9 +128,10 @@ class SpriteBar(QWidget):
         # -- Top Right
         qp.drawLine(xRight, yTop, xRight-4, yTop)
         qp.drawLine(xRight, yTop, xRight, yTop+4)
-        # -- Bottom Lft
+        # -- Bottom Left
         qp.drawLine(xLeft, yBottom, xLeft, yBottom-4)
         qp.drawLine(xLeft, yBottom, xLeft+4, yBottom)
+
 
     def paintEvent(self, e):
         '''
@@ -142,7 +145,18 @@ class SpriteBar(QWidget):
         # h = size.height()
         pen = QtGui.QPen(QtGui.QColor(200, 200, 200), 1, QtCore.Qt.SolidLine)
         qp.setPen(pen)
-        qp.drawRect(0, 0, w - 1, (8 * self.cell_size + 4) - 1)
+        #qp.drawRect(0, 0, w - 1, (8 * self.cell_size + 4) - 1)
+
+        xLeft  = 0
+        xRight = w - 1
+        yTop   = 0
+        for i in range(0,len(self.list_sprites)):
+            qp.drawLine(xLeft, yTop, xRight, yTop)
+            yTop += self.cell_size
+        qp.drawLine(xLeft, yTop, xRight, yTop)
+        qp.drawLine(xLeft, 0, xLeft, yTop)
+        qp.drawLine(xRight, 0, xRight, yTop)
+
 
         self.drawSprites(qp)
         self.drawSelectMark(qp)
