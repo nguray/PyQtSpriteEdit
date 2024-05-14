@@ -29,6 +29,7 @@
         <file>res/SelectRect.png</file>
         <file>res/Pencil.png</file>
         <file>res/Pipet.png</file>
+        <file>res/PickColor.png</file>
         <file>res/DrawLine.png</file>
         <file>res/DrawRectangle.png</file>
         <file>res/DrawEllipse.png</file>

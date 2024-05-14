@@ -419,6 +419,8 @@ class MyWindow(QMainWindow):
 
         self.setWindowTitle('SpriteEditor')
 
+        self.editarea.setFocus()
+
 
 def main():
     
