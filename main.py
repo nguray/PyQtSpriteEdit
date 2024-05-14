@@ -9,8 +9,9 @@ Created on 24 Nov. 2019
 import sys
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QHBoxLayout,\
-        QVBoxLayout, QMainWindow, QAction, QMenu, qApp, QDialog, QFileDialog,\
-        QPushButton
+        QVBoxLayout, QMainWindow, QAction, QMenu, qApp, QDialog,\
+        QFileDialog, QPushButton
+
 from editarea import MyEditArea
 from colorbar import MyColorBar
 from spritebar import SpriteBar
@@ -126,9 +127,6 @@ class MyWindow(QMainWindow):
         self.unCheckAllToolBarBtns()
         self.pencilModeAction.setChecked(True)
         self.editarea.setEditMode(self.editarea.EDIT.Pencil)
-
-    # def setPipetEditMode(self):
-    #     self.editarea.setEditMode(self.editarea.EDIT.Pipet)
 
     def setLineEditMode(self):
         self.unCheckAllToolBarBtns()

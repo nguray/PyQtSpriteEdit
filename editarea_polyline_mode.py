@@ -3,12 +3,12 @@
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QApplication
 
+from dataclasses import dataclass
 
+@dataclass
 class _Point:
-    def __init__(self, cx, cy):
-        self.x = cx
-        self.y = cy
-
+    x : int
+    y : int
 
 class PolyLineMode:
 

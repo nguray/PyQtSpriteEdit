@@ -1,11 +1,13 @@
 
+from dataclasses import dataclass
 
+@dataclass
 class Rect:
-    def __init__(self, l, t, r, b):
-        self.left = l
-        self.top = t
-        self.right = r
-        self.bottom = b
+
+    left : int
+    top : int
+    right : int
+    bottom : int
 
     def normalize(self):
         if (self.left > self.right):

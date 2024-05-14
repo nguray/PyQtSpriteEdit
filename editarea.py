@@ -19,35 +19,6 @@ from editarea_polyline_mode import PolyLineMode
 
 from rect import Rect
 
-
-class PipetMode:
-    def __init__(self, outer):
-        self.outer = outer
-
-    def mousePressEvent(self, mouseEvent):
-        mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        # modifiers = QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
-            c = self.outer.sprite.pixel(self.x, self.y)
-            if mouseEvent.buttons() == QtCore.Qt.LeftButton:
-                self.outer.foregroundColor.setRgba(c)
-                self.outer.pipetForeColor.emit(self.outer.foregroundColor)
-            else:
-                self.outer.backgroundColor.setRgba(c)
-                self.outer.pipetBackColor.emit(self.outer.backgroundColor)
-            self.outer.repaint()
-
-    def mouseReleaseEvent(self, mouseEvent):
-        pass
-
-    def mouseMoveEvent(self, mouseEvent):
-        pass
-
-    def keyPressEvent(self, e):
-        pass
-
-
 class MyEditArea(QWidget):
     '''
     classdocs
@@ -59,10 +30,10 @@ class MyEditArea(QWidget):
     fileNameChanged = QtCore.pyqtSignal(str)
 
     EditeModes = namedtuple('EditModes', [
-        'Select', 'Pencil', 'Rubber', 'Pipet', 'DrawLine', 'DrawRectangle',
+        'Select', 'Pencil', 'Rubber', 'DrawLine', 'DrawRectangle',
         'DrawEllipse', 'Fill'
     ])
-    EDIT = EditeModes(0, 1, 2, 3, 4, 5, 6, 7)
+    EDIT = EditeModes(0, 1, 2, 3, 4, 5, 6)
 
     x = -1
     y = -1
@@ -98,8 +69,6 @@ class MyEditArea(QWidget):
             QtGui.QPixmap("cursors/CursorPencil.png", "PNG"), 12, 19)
         myCursorRubber = QtGui.QCursor(
             QtGui.QPixmap("cursors/CursorRubber1.png", "PNG"), 12, 19)
-        myCursorPipet = QtGui.QCursor(
-            QtGui.QPixmap("cursors/CursorPipet.png", "PNG"), 12, 19)
         myCursorLine = QtGui.QCursor(
             QtGui.QPixmap("cursors/CursorLine.png", "PNG"), 12, 19)
         myCursorRectangle = QtGui.QCursor(
@@ -109,7 +78,7 @@ class MyEditArea(QWidget):
         myCursorFill = QtGui.QCursor(
             QtGui.QPixmap("cursors/CursorFill.png", "PNG"), 7, 21)
         self.editCursors = [
-            myCursorSelect, myCursorPencil, myCursorRubber, myCursorPipet,
+            myCursorSelect, myCursorPencil, myCursorRubber,
             myCursorLine, myCursorRectangle, myCursorEllipse, myCursorFill
         ]
 
@@ -120,8 +89,7 @@ class MyEditArea(QWidget):
         selectRectModeAction.setStatusTip('Select Tool')
         pencilModeAction = QAction(QtGui.QIcon('Pencil.png'), 'Pencil', self)
         pencilModeAction.setStatusTip('Pencil Tool')
-        pipetModeAction = QAction(QtGui.QIcon('Pipet.png'), 'Pipet', self)
-        pipetModeAction.setStatusTip('Pipet Tool')
+
         lineModeAction = QAction(QtGui.QIcon('DrawLine.png'), 'Draw Line',
                                  self)
         lineModeAction.setStatusTip('Draw Line Tool')
@@ -136,7 +104,7 @@ class MyEditArea(QWidget):
 
         self.editActions = [
             selectRectModeAction, pencilModeAction,
-            pipetModeAction, lineModeAction, rectangleModeAction,
+            lineModeAction, rectangleModeAction,
             ellipseModeAction, fillerModeAction
         ]
 
@@ -147,13 +115,11 @@ class MyEditArea(QWidget):
         self.DrawRectangleModeObj = RectangleMode(self)
         self.DrawEllipseModeObj = EllipseMode(self)
         self.FillModeObj = FillMode(self)
-        self.PipetModeObj = PipetMode(self)
         self.CurEditModeObj = self.SelectModeObj
 
         self.show()
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.setAcceptDrops(True)
-
 
 
     def init32Sprite(self):
@@ -225,9 +191,6 @@ class MyEditArea(QWidget):
 
             elif (self.edit_mode == self.EDIT.Pencil):  # Pencil Mode
                 self.CurEditModeObj = self.PencilModeObj
-
-            elif (self.edit_mode == self.EDIT.Pipet):  # Pipet Mode
-                self.CurEditModeObj = self.PipetModeObj
 
             elif (self.edit_mode == self.EDIT.DrawLine):  # Draw line Mode
                 self.CurEditModeObj = self.DrawPolyLineModeObj
@@ -404,10 +367,16 @@ class MyEditArea(QWidget):
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         self.x, self.y = self.mouseToPixCoord(mousePos.x(), mousePos.y())
-        # modifiers = QApplication.keyboardModifiers()
-        # --
-        self.CurEditModeObj.mousePressEvent(mouseEvent)
-        self.cursorPosChanged.emit(self.x, self.y)
+        modifiers = QApplication.keyboardModifiers()
+        if mouseEvent.buttons() == QtCore.Qt.LeftButton and modifiers & QtCore.Qt.ShiftModifier:
+            if self.InSprite(self.x, self.y):
+                c = self.sprite.pixel(self.x, self.y)
+                self.foregroundColor.setRgba(c)
+                self.pipetForeColor.emit(self.foregroundColor)
+        else:
+            # --
+            self.CurEditModeObj.mousePressEvent(mouseEvent)
+            self.cursorPosChanged.emit(self.x, self.y)
 
     def mouseReleaseEvent(self, mouseEvent):
         self.CurEditModeObj.mouseReleaseEvent(mouseEvent)
