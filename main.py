@@ -361,7 +361,7 @@ class MyWindow(QMainWindow):
         self.toolbar.addAction(self.fillerModeAction)
 
         # --
-        self.editarea = MyEditArea(self)
+        self.editarea : MyEditArea = MyEditArea(self)
         w, h = self.editarea.computeSize()
         self.editarea.resize(w, h)
 

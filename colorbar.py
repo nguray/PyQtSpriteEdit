@@ -19,7 +19,7 @@ class ColorRect(QtCore.QRect):
         QtCore.QRect.__init__(self)
         self.color = c
 
-    def draw(self, qp):
+    def draw(self, qp: QtGui.QPainter):
         if self.color.rgba() == QtGui.QColor(255, 255, 255, 255).rgba():
             qp.setPen(QtGui.QColor(0, 0, 0, 255))
             qp.setBrush(self.color)
@@ -35,7 +35,16 @@ class ColorRect(QtCore.QRect):
             else:
                 qp.setPen(self.color)
                 qp.drawRect(self)
-
+    
+    def drawFrame(self, qp):
+        r = 255-self.color.red()
+        g = 255-self.color.green()
+        b = 255-self.color.blue()
+        qp.setPen(QtGui.QColor(r, g, b, 255))
+        qp.drawLine(self.topLeft(),self.topRight())
+        qp.drawLine(self.topRight(),self.bottomRight())
+        qp.drawLine(self.bottomRight(),self.bottomLeft())
+        qp.drawLine(self.bottomLeft(),self.topLeft())
 
 class MyColorBar(QWidget):
     '''
@@ -48,6 +57,9 @@ class MyColorBar(QWidget):
     cellsize = 18
     selectedForeColor = ColorRect(QtGui.QColor(0, 0, 0, 255))
     selectedBackColor = ColorRect(QtGui.QColor(0, 0, 0, 0))
+
+    fDragForegroundColor = False
+    dragColorRect = ColorRect(QtGui.QColor(0, 0, 0, 0))
 
     def __init__(self, parent=None):
         '''
@@ -103,13 +115,10 @@ class MyColorBar(QWidget):
         self.repaint()
 
     def drawPalette(self, qp):
-        for lin in self.palette:
-            linPalette = self.palette[lin]
-            y = self.cellsize * lin
-            c = 0
-            for colorRect in linPalette:
+        for lin in self.palette.items():
+            y = self.cellsize * lin[0]
+            for c,colorRect in enumerate(lin[1]):
                 x = self.cellsize * c + 2 * self.cellsize
-                c += 1
                 colorRect.setRect(x + 1, y + 1, self.cellsize - 2,
                                   self.cellsize - 2)
                 colorRect.draw(qp)
@@ -118,20 +127,50 @@ class MyColorBar(QWidget):
         mousePos = mouseEvent.pos()
         x = mousePos.x()
         y = mousePos.y()
-        for lin in self.palette:
-            linPalette = self.palette[lin]
-            for colorRect in linPalette:
-                if colorRect.contains(x, y):
-                    if mouseEvent.buttons() == QtCore.Qt.LeftButton:
-                        self.selectedForeColor.color = colorRect.color
-                        self.foreColorChanged.emit(self.selectedForeColor.color)
-                        self.repaint()
-                        return
-                    elif mouseEvent.buttons() == QtCore.Qt.RightButton:
-                        self.selectedBackColor.color = colorRect.color
-                        self.backColorChanged.emit(self.selectedBackColor.color)
-                        self.repaint()
-                        return
+        if mouseEvent.buttons() == QtCore.Qt.LeftButton:
+            if self.selectedForeColor.contains(x,y):
+                self.fDragForegroundColor = True
+                self.dragColorRect.color = self.selectedForeColor.color
+                offSet = self.cellsize // 2
+                self.dragColorRect.setRect(x-offSet,y-offSet,self.cellsize,self.cellsize)
+                self.repaint()
+            else:
+                for lin in self.palette.items():
+                    for colorRect in lin[1]:
+                        if colorRect.contains(x, y):
+                            if mouseEvent.buttons() == QtCore.Qt.LeftButton:
+                                self.selectedForeColor.color = colorRect.color
+                                self.foreColorChanged.emit(self.selectedForeColor.color)
+                                self.repaint()
+                                return
+                            elif mouseEvent.buttons() == QtCore.Qt.RightButton:
+                                self.selectedBackColor.color = colorRect.color
+                                self.backColorChanged.emit(self.selectedBackColor.color)
+                                self.repaint()
+                                return
+                            
+    def mouseMoveEvent(self, mouseEvent):
+        mousePos = mouseEvent.pos()
+        if self.fDragForegroundColor:
+            x = mousePos.x()
+            y = mousePos.y()
+            if self.fDragForegroundColor:
+                offSet = self.cellsize // 2
+                self.dragColorRect.setRect(x-offSet,y-offSet,self.cellsize,self.cellsize)
+                self.repaint()
+
+    def mouseReleaseEvent(self, mouseEvent):
+        mousePos = mouseEvent.pos()
+        if self.fDragForegroundColor:
+            x = mousePos.x()
+            y = mousePos.y()
+            for lin in self.palette.items():
+                for colorRect in lin[1]:
+                    if colorRect.contains(x, y):
+                        colorRect.color = self.dragColorRect.color
+            self.fDragForegroundColor = False
+            self.dragColorRect.setRect(0,0,0,0)
+            self.repaint()            
 
     def savePalette(self):
         with open("palette.cfg", 'w') as outF:
@@ -141,9 +180,8 @@ class MyColorBar(QWidget):
             c = self.selectedBackColor.color.rgba()
             outF.write(str(c))
             outF.write("\n")
-            for lin in self.palette:
-                linPalette = self.palette[lin]
-                for colorRect in linPalette:
+            for lin in self.palette.items():
+                for colorRect in lin[1]:
                     c = colorRect.color.rgba()
                     outF.write(str(c))
                     outF.write("\n")
@@ -154,9 +192,8 @@ class MyColorBar(QWidget):
             self.selectedForeColor.color.setRgba(int(strlin))
             strlin = inF.readline()
             self.selectedBackColor.color.setRgba(int(strlin))
-            for lin in self.palette:
-                linPalette = self.palette[lin]
-                for colorRect in linPalette:
+            for lin in self.palette.items():
+                for colorRect in lin[1]:
                     strlin = inF.readline()
                     if strlin != "":
                         colorRect.color.setRgba(int(strlin))
@@ -165,16 +202,14 @@ class MyColorBar(QWidget):
         mousePos = mouseEvent.pos()
         x = mousePos.x()
         y = mousePos.y()
-        if mouseEvent.buttons() == QtCore.Qt.LeftButton:
-            for lin in self.palette:
-                linPalette = self.palette[lin]
-                for colorRect in linPalette:
-                    if colorRect.contains(x, y):
-                        col = QColorDialog.getColor()
-                        if col.isValid():
-                            colorRect.color = col
-                            self.repaint()
-                            self.savePalette()
+        for lin in self.palette.items():
+            for colorRect in lin[1]:
+                if colorRect.contains(x, y):
+                    col = QColorDialog.getColor()
+                    if col.isValid():
+                        colorRect.color = col
+                        self.repaint()
+                        self.savePalette()
 
     def paintEvent(self, e):
 
@@ -191,6 +226,10 @@ class MyColorBar(QWidget):
         s = int(1.5 * self.cellsize - 2)
         self.selectedForeColor.setRect(1, 1, s, s)
         self.selectedForeColor.draw(qp)
+
+        if self.fDragForegroundColor:
+            self.dragColorRect.draw(qp)
+            self.dragColorRect.drawFrame(qp)
 
         # size = self.size()
         # w = size.width()
