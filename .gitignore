@@ -3,3 +3,4 @@ build/
 build/main/
 dist/
 *.exe
+*.cfg
