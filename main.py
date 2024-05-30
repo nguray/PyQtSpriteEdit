@@ -46,6 +46,10 @@ class myAbout(QDialog):
 
 
 class MyWindow(QMainWindow):
+
+    filename = ""
+    spriteBarX = 16
+
     def __init__(self):
         super(MyWindow, self).__init__()
         self.initUI()
@@ -180,8 +184,8 @@ class MyWindow(QMainWindow):
         self.editarea.doRotate90AntiClock()
 
     def aboutMe(self):
-        self.d = myAbout(self)
-        self.d.show()
+        d = myAbout(self)
+        d.show()
 
     def updateCursorPosDisplay(self, x, y):
         self.statusBar().showMessage("cursor : ({0},{1})".format(x, y))
