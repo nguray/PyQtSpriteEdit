@@ -5,9 +5,9 @@ Created on 24 Nov. 2019
 
 @author: nguray
 '''
+import os.path
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QWidget, QColorDialog
-
 
 class ColorRect(QtCore.QRect):
     """
@@ -187,16 +187,17 @@ class MyColorBar(QWidget):
                     outF.write("\n")
 
     def loadPalette(self):
-        with open("palette.cfg", 'r') as inF:
-            strlin = inF.readline()
-            self.selectedForeColor.color.setRgba(int(strlin))
-            strlin = inF.readline()
-            self.selectedBackColor.color.setRgba(int(strlin))
-            for lin in self.palette.items():
-                for colorRect in lin[1]:
-                    strlin = inF.readline()
-                    if strlin != "":
-                        colorRect.color.setRgba(int(strlin))
+        if os.path.exists("palette.cfg"):
+            with open("palette.cfg", 'r') as inF:
+                strlin = inF.readline()
+                self.selectedForeColor.color.setRgba(int(strlin))
+                strlin = inF.readline()
+                self.selectedBackColor.color.setRgba(int(strlin))
+                for lin in self.palette.items():
+                    for colorRect in lin[1]:
+                        strlin = inF.readline()
+                        if strlin != "":
+                            colorRect.color.setRgba(int(strlin))
 
     def mouseDoubleClickEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
