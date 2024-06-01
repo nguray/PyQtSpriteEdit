@@ -7,10 +7,7 @@ Created on 24 Nov. 2019
 '''
 
 import sys
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QHBoxLayout,\
-        QVBoxLayout, QMainWindow, QAction, QMenu, qApp, QDialog,\
-        QFileDialog, QPushButton
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from editarea import MyEditArea
 from colorbar import MyColorBar
@@ -19,20 +16,20 @@ from spritebar import SpriteBar
 # MSYS2 Shell : pyrcc5 -o resources.py qtspriteedit.qrc
 import  resources
 
-class myAbout(QDialog):
+class myAbout(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(myAbout, self).__init__(parent)
         # Create widgets
-        self.l1 = QLabel("PyQtSpriteEdit version 0.1")
+        self.l1 = QtWidgets.QLabel("PyQtSpriteEdit version 0.1")
         self.l1.setAlignment(QtCore.Qt.AlignCenter)
-        self.l2 = QLabel("Raymond NGUYEN THANH")
+        self.l2 = QtWidgets.QLabel("Raymond NGUYEN THANH")
         self.l2.setAlignment(QtCore.Qt.AlignCenter)
-        self.button = QPushButton("OK")
+        self.button = QtWidgets.QPushButton("OK")
         # Create layout and add widgets
-        layout = QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.l1)
         layout.addWidget(self.l2)
-        hBox1 = QHBoxLayout()
+        hBox1 = QtWidgets.QHBoxLayout()
         hBox1.addStretch()
         hBox1.addWidget(self.button)
         hBox1.addStretch()
@@ -45,7 +42,7 @@ class myAbout(QDialog):
         self.button.clicked.connect(self.accept)
 
 
-class MyWindow(QMainWindow):
+class MyWindow(QtWidgets.QMainWindow):
 
     filename = ""
     spriteBarX = 16
@@ -90,7 +87,7 @@ class MyWindow(QMainWindow):
         self.repaint()
 
     def openFile(self):
-        inputfilename, _ = QFileDialog.getOpenFileName(self, 'Open File', ".",
+        inputfilename, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', ".",
                                                        "Images (*.png)")
         if inputfilename:
             tmpName = str(inputfilename)
@@ -102,7 +99,7 @@ class MyWindow(QMainWindow):
                 self.repaint()
 
     def saveAsFile(self):
-        inputfilename, _ = QFileDialog.getSaveFileName(self, 'Save File', ".",
+        inputfilename, _ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', ".",
                                                        "Images (*.png)")
         if inputfilename:
             tmpName = str(inputfilename)
@@ -205,92 +202,92 @@ class MyWindow(QMainWindow):
 
         # File Menu Actions
         #newAction = QAction(QtGui.QIcon('icons/document-open.png'), 'New', self)
-        newAction = QAction('New', self)
+        newAction = QtWidgets.QAction('New', self)
         #newAction.setIcon(QtGui.QIcon('application-exit-symbolic.svg'))
         newAction.setShortcut('Ctrl+N')
         newAction.setStatusTip('Create new file')
         # newAction.triggered.connect(self.newFile)
 
-        newAction16 = QAction('16 x 16', self)
+        newAction16 = QtWidgets.QAction('16 x 16', self)
         newAction16.triggered.connect(self.newFile16)
-        newAction32 = QAction('32 x 32', self)
+        newAction32 = QtWidgets.QAction('32 x 32', self)
         newAction32.triggered.connect(self.newFile32)
-        newAction64 = QAction('64 x 64', self)
+        newAction64 = QtWidgets.QAction('64 x 64', self)
         newAction64.triggered.connect(self.newFile64)
 
-        openAction = QAction(QtGui.QIcon(':res/document-open.png'), 'Open',
+        openAction = QtWidgets.QAction(QtGui.QIcon(':res/document-open.png'), 'Open',
                              self)
         openAction.setShortcut('Ctrl+O')
         openAction.setStatusTip('Open a file')
         openAction.triggered.connect(self.openFile)
 
-        saveAction = QAction(QtGui.QIcon(':res/document-save.png'), 'Save',
+        saveAction = QtWidgets.QAction(QtGui.QIcon(':res/document-save.png'), 'Save',
                              self)
         saveAction.setShortcut('Ctrl+S')
         saveAction.setStatusTip('Save current file')
         saveAction.triggered.connect(self.saveFile)
 
-        saveAsAction = QAction(QtGui.QIcon(':res/document-save-as.png'),
+        saveAsAction = QtWidgets.QAction(QtGui.QIcon(':res/document-save-as.png'),
                                'Save As...', self)
         saveAsAction.setShortcut('Ctrl+S')
         saveAsAction.setStatusTip('Save As current file')
         saveAsAction.triggered.connect(self.saveAsFile)
 
-        exitAction = QAction(QtGui.QIcon(':res/process-stop.png'), '&Exit',
+        exitAction = QtWidgets.QAction(QtGui.QIcon(':res/process-stop.png'), '&Exit',
                              self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(qApp.quit)
+        exitAction.triggered.connect(QtWidgets.qApp.quit)
 
         # Edit Menu Actions
-        undoAction = QAction(QtGui.QIcon(':res/edit-undo.png'), 'Undo', self)
+        undoAction = QtWidgets.QAction(QtGui.QIcon(':res/edit-undo.png'), 'Undo', self)
         undoAction.setShortcut('Ctrl+Z')
         undoAction.setStatusTip('Undo')
         undoAction.triggered.connect(self.undoEdit)
 
-        cutAction = QAction(QtGui.QIcon(':res/edit-cut.png'), 'Cut', self)
+        cutAction = QtWidgets.QAction(QtGui.QIcon(':res/edit-cut.png'), 'Cut', self)
         cutAction.setShortcut('Ctrl+X')
         cutAction.setStatusTip('Cut')
         cutAction.triggered.connect(self.cutEdit)
 
-        copyAction = QAction(QtGui.QIcon(':res/edit-copy.png'), 'Copy', self)
+        copyAction = QtWidgets.QAction(QtGui.QIcon(':res/edit-copy.png'), 'Copy', self)
         copyAction.setShortcut('Ctrl+C')
         copyAction.setStatusTip('Copy')
         copyAction.triggered.connect(self.copyEdit)
 
-        pasteAction = QAction(QtGui.QIcon(':res/edit-paste.png'), 'Paste',
+        pasteAction = QtWidgets.QAction(QtGui.QIcon(':res/edit-paste.png'), 'Paste',
                               self)
         pasteAction.setShortcut('Ctrl+V')
         pasteAction.setStatusTip('Paste')
         pasteAction.triggered.connect(self.pasteEdit)
 
         # --
-        mirrorHorizontalAction = QAction(
+        mirrorHorizontalAction = QtWidgets.QAction(
             QtGui.QIcon(':res/mirror_horizontal.png'), 'Mirror Horizontal',
             self)
         mirrorHorizontalAction.triggered.connect(self.mirrorHorizontalImage)
 
-        mirrorVerticalAction = QAction(
+        mirrorVerticalAction = QtWidgets.QAction(
             QtGui.QIcon(':res/mirror_vertical.png'), 'Mirror Vertical', self)
         mirrorVerticalAction.triggered.connect(self.mirrorVerticalImage)
 
-        rotate90ClockAction = QAction(
+        rotate90ClockAction = QtWidgets.QAction(
             QtGui.QIcon(':res/rotate_90_clockwise.png'),
             u'Rotate 90° clockwise', self)
         rotate90ClockAction.triggered.connect(self.rotate90ClockImage)
 
-        rotate90AntiClockAction = QAction(
+        rotate90AntiClockAction = QtWidgets.QAction(
             QtGui.QIcon(':res/rotate_90_anticlockwise.png'),
             u'Rotate 90° counter-clockwise', self)
         rotate90AntiClockAction.triggered.connect(self.rotate90AntiClockImage)
 
-        aboutAction = QAction(QtGui.QIcon(':res/help-browser.png'), 'About',
+        aboutAction = QtWidgets.QAction(QtGui.QIcon(':res/help-browser.png'), 'About',
                               self)
         aboutAction.triggered.connect(self.aboutMe)
 
         menubar = self.menuBar()
         self.fileMenu = menubar.addMenu('&File')
-        self.subNewMenu = QMenu('New')
+        self.subNewMenu = QtWidgets.QMenu('New')
         self.subNewMenu.setIcon(QtGui.QIcon(':res/document-new.png'))
         self.subNewMenu.addAction(newAction16)
         self.subNewMenu.addAction(newAction32)
@@ -320,37 +317,37 @@ class MyWindow(QMainWindow):
 
         # ------------------------------------------------
         # Toolbar Actions
-        self.selectRectModeAction = QAction(QtGui.QIcon(':res/SelectRect.png'),
+        self.selectRectModeAction = QtWidgets.QAction(QtGui.QIcon(':res/SelectRect.png'),
                                        'Select', self)
         self.selectRectModeAction.setStatusTip('Select Tool')
         self.selectRectModeAction.setCheckable(True)
         self.selectRectModeAction.triggered.connect(self.setSelectEditMode)
 
-        self.pencilModeAction = QAction(QtGui.QIcon(':res/Pencil.png'),
+        self.pencilModeAction = QtWidgets.QAction(QtGui.QIcon(':res/Pencil.png'),
                                    'Pencil', self)
         self.pencilModeAction.setStatusTip('Pencil Tool')
         self.pencilModeAction.setCheckable(True)
         self.pencilModeAction.triggered.connect(self.setPencilEditMode)
 
-        self.lineModeAction = QAction(QtGui.QIcon(':res/DrawLine.png'), 'Draw Line',
+        self.lineModeAction = QtWidgets.QAction(QtGui.QIcon(':res/DrawLine.png'), 'Draw Line',
                                  self)
         self.lineModeAction.setStatusTip('Draw Line Tool')
         self.lineModeAction.setCheckable(True)
         self.lineModeAction.triggered.connect(self.setLineEditMode)
 
-        self.rectangleModeAction = QAction(QtGui.QIcon(':res/DrawRectangle.png'),
+        self.rectangleModeAction = QtWidgets.QAction(QtGui.QIcon(':res/DrawRectangle.png'),
                                       'Draw Rectangle', self)
         self.rectangleModeAction.setStatusTip('Draw Rectangle Tool')
         self.rectangleModeAction.setCheckable(True)
         self.rectangleModeAction.triggered.connect(self.setRectangleEditMode)
 
-        self.ellipseModeAction = QAction(QtGui.QIcon(':res/DrawEllipse.png'),
+        self.ellipseModeAction = QtWidgets.QAction(QtGui.QIcon(':res/DrawEllipse.png'),
                                     'Draw Ellipse', self)
         self.ellipseModeAction.setStatusTip('Draw Ellipse Tool')
         self.ellipseModeAction.setCheckable(True)
         self.ellipseModeAction.triggered.connect(self.setEllipseEditMode)
 
-        self.fillerModeAction = QAction(QtGui.QIcon(':res/Filler.png'), 'Fill', self)
+        self.fillerModeAction = QtWidgets.QAction(QtGui.QIcon(':res/Filler.png'), 'Fill', self)
         self.fillerModeAction.setStatusTip('Fill Tool')
         self.fillerModeAction.setCheckable(True)
         self.fillerModeAction.triggered.connect(self.setFillEditMode)
@@ -394,7 +391,7 @@ class MyWindow(QMainWindow):
 
         self.spritebar.spriteChanged.connect(self.spriteChanged)
 
-        self.hbox = QHBoxLayout()
+        self.hbox = QtWidgets.QHBoxLayout()
         self.hbox.addWidget(self.editarea)
         self.hbox.addWidget(self.spritebar)
 
@@ -403,13 +400,13 @@ class MyWindow(QMainWindow):
         # -- Sprite barre
         self.hbox.setStretch(1, 40)
 
-        vbox = QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         vbox.addLayout(self.hbox)
         vbox.addWidget(self.colorbar)
         vbox.setStretch(0, h)
         vbox.setStretch(1, self.colorbar.cellsize*2+2)
 
-        centralWidget = QWidget(self)
+        centralWidget = QtWidgets.QWidget(self)
         centralWidget.setLayout(vbox)
 
         self.setCentralWidget(centralWidget)
@@ -426,7 +423,7 @@ class MyWindow(QMainWindow):
 
 def main():
     
-    app = QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     # Afficher les icons dans les menus
     app.setAttribute(QtCore.Qt.AA_DontShowIconsInMenus, False)
     myMain = MyWindow()

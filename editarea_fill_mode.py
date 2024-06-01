@@ -1,7 +1,6 @@
 
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 
 class FillMode:

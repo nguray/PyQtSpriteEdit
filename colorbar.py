@@ -6,8 +6,7 @@ Created on 24 Nov. 2019
 @author: nguray
 '''
 import os.path
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QWidget, QColorDialog
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 class ColorRect(QtCore.QRect):
     """
@@ -46,7 +45,7 @@ class ColorRect(QtCore.QRect):
         qp.drawLine(self.bottomRight(),self.bottomLeft())
         qp.drawLine(self.bottomLeft(),self.topLeft())
 
-class MyColorBar(QWidget):
+class MyColorBar(QtWidgets.QWidget):
     '''
     Colors palette
     '''
@@ -65,7 +64,7 @@ class MyColorBar(QWidget):
         '''
         Constructor
         '''
-        QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
 
         self.palette = {
             0: [
@@ -206,7 +205,7 @@ class MyColorBar(QWidget):
         for lin in self.palette.items():
             for colorRect in lin[1]:
                 if colorRect.contains(x, y):
-                    col = QColorDialog.getColor()
+                    col = QtWidgets.QColorDialog.getColor()
                     if col.isValid():
                         colorRect.color = col
                         self.repaint()

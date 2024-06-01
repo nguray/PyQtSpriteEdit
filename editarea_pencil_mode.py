@@ -1,6 +1,5 @@
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 
 class PencilMode:

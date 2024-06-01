@@ -6,11 +6,10 @@ Created on 24 Nov. 2019
 @author: nguray
 '''
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 
-class SpriteBar(QWidget):
+class SpriteBar(QtWidgets.QWidget):
     '''
     Sprites palette
     '''
@@ -27,7 +26,7 @@ class SpriteBar(QWidget):
         '''
         Constructor
         '''
-        QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
 
         for i in range(0, self.nb_cells):
             if (i == 0):

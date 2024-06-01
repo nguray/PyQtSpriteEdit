@@ -1,7 +1,6 @@
 
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 from dataclasses import dataclass
 
@@ -54,7 +53,7 @@ class PolyLineMode:
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QApplication.keyboardModifiers()
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.outer.InSprite(self.x, self.y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if modifiers & QtCore.Qt.ShiftModifier:
@@ -92,7 +91,7 @@ class PolyLineMode:
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QApplication.keyboardModifiers()
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.outer.InSprite(self.x, self.y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if self.selected_point is not None:

@@ -1,6 +1,5 @@
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 from rect import Rect
 
@@ -124,7 +123,7 @@ class SelectMode:
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QApplication.keyboardModifiers()
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.outer.InSprite(self.x, self.y):
             if self.hit_paste:
                 if (self.x != self.hit_paste_x) or (self.y !=

@@ -6,8 +6,7 @@ Created on 24 Nov. 2019
 @author: nguray
 '''
 import os
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QWidget, QAction, QMenu
+from PyQt5 import QtGui, QtCore, QtWidgets
 from collections import namedtuple
 
 from editarea_pencil_mode import PencilMode
@@ -19,7 +18,7 @@ from editarea_polyline_mode import PolyLineMode
 
 from rect import Rect
 
-class MyEditArea(QWidget):
+class MyEditArea(QtWidgets.QWidget):
     '''
     classdocs
     '''
@@ -59,7 +58,7 @@ class MyEditArea(QWidget):
         '''
         Constructor
         '''
-        QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
 
         self.myPickColorCursor = QtGui.QCursor(QtGui.QPixmap(":res/PickColor.png"),6,23)
         # ----------------------------------------------------------------------
@@ -84,22 +83,22 @@ class MyEditArea(QWidget):
 
         self.init32Sprite()
 
-        selectRectModeAction = QAction(QtGui.QIcon('SelectRect.png'), 'Select',
+        selectRectModeAction = QtWidgets.QAction(QtGui.QIcon('SelectRect.png'), 'Select',
                                        self)
         selectRectModeAction.setStatusTip('Select Tool')
-        pencilModeAction = QAction(QtGui.QIcon('Pencil.png'), 'Pencil', self)
+        pencilModeAction = QtWidgets.QAction(QtGui.QIcon('Pencil.png'), 'Pencil', self)
         pencilModeAction.setStatusTip('Pencil Tool')
 
-        lineModeAction = QAction(QtGui.QIcon('DrawLine.png'), 'Draw Line',
+        lineModeAction = QtWidgets.QAction(QtGui.QIcon('DrawLine.png'), 'Draw Line',
                                  self)
         lineModeAction.setStatusTip('Draw Line Tool')
-        rectangleModeAction = QAction(QtGui.QIcon('DrawRectangle.png'),
+        rectangleModeAction = QtWidgets.QAction(QtGui.QIcon('DrawRectangle.png'),
                                       'Draw Rectangle', self)
         rectangleModeAction.setStatusTip('Draw Rectangle Tool')
-        ellipseModeAction = QAction(QtGui.QIcon('DrawEllipse.png'),
+        ellipseModeAction = QtWidgets.QAction(QtGui.QIcon('DrawEllipse.png'),
                                     'Draw Ellipse', self)
         ellipseModeAction.setStatusTip('Draw Ellipse Tool')
-        fillerModeAction = QAction(QtGui.QIcon('Filler.png'), 'Fill', self)
+        fillerModeAction = QtWidgets.QAction(QtGui.QIcon('Filler.png'), 'Fill', self)
         fillerModeAction.setStatusTip('Fill Tool')
 
         self.editActions = [
@@ -367,7 +366,7 @@ class MyEditArea(QWidget):
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         self.x, self.y = self.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QApplication.keyboardModifiers()
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
         if mouseEvent.buttons() == QtCore.Qt.LeftButton and modifiers & QtCore.Qt.ShiftModifier:
             if self.InSprite(self.x, self.y):
                 c = self.sprite.pixel(self.x, self.y)

@@ -1,7 +1,6 @@
 
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 from rect import Rect
 
@@ -83,7 +82,7 @@ class RectangleMode:
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QApplication.keyboardModifiers()
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.outer.InSprite(self.x, self.y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if self.hit_handle != -1:
