@@ -3,6 +3,67 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 from rect import Rect
 
+class RInt:
+    val=0
+    def __init__(self, nv) -> None:
+        self.val = nv
+
+class SelectHandle:
+    x = RInt(0)
+    y = RInt(0)
+    def __init__(self) -> None:
+        pass
+
+class SelectRect1:
+
+    x1 = RInt(0)
+    y1 = RInt(0)
+    x2 = RInt(0)
+    y2 = RInt(0)
+    TopLeft = SelectHandle()
+    TopRight = SelectHandle()
+    BottomLeft = SelectHandle()
+    BottomRight = SelectHandle()
+
+    def __init__(self) -> None:
+        self.TopLeft.x = self.x1
+        self.TopLeft.y = self.y1
+        self.TopRight.x = self.x2
+        self.TopRight.y = self.y1
+        self.BottomLeft.x = self.x1
+        self.BottomLeft.y = self.y2
+        self.BottomRight.x = self.x2
+        self.BottomRight.y = self.y2
+
+    def setTopLeft(self,x: int,y: int):
+        self.TopLeft.x.val = x
+        self.TopLeft.y.val = y
+    
+    def getTopLeft(self):
+        return self.TopLeft.x.val,self.TopLeft.y.val
+
+    def setTopRight(self,x: int,y: int):
+        self.TopRight.x.val = x
+        self.TopRight.y.val = y
+
+    def getTopRight(self):
+        return self.TopRight.x.val,self.TopRight.y.val
+
+    def setBottomRight(self,x: int,y: int):
+        self.BottomRight.x.val = x
+        self.BottomRight.y.val = y
+
+    def getBottomRight(self):
+        return self.BottomRight.x.val,self.BottomRight.y.val
+
+    def setBottomLeft(self,x: int,y: int):
+        self.BottomLeft.x.val = x
+        self.BottomLeft.y.val = y
+
+    def getBottomLeft(self):
+        return self.BottomLeft.x.val,self.BottomLeft.y.val
+
+
 class SelectMode:
 
     pasteRect = Rect(0, 0, 0, 0)
@@ -21,8 +82,14 @@ class SelectMode:
     cpy_width = 0
     cpy_height = 0
 
+    select_rect = SelectRect1()
+
     def __init__(self, outer):
         self.outer = outer
+        self.select_rect.setTopLeft(10,20)
+        x, y = self.select_rect.getBottomLeft()
+        pass
+
 
     def initSelectRect(self):
         self.selectRect.left = -1
@@ -55,16 +122,22 @@ class SelectMode:
         normRect = Rect(self.selectRect.left, self.selectRect.top,
                          self.selectRect.right, self.selectRect.bottom)
         normRect.normalize()
-        pen = QtGui.QPen(QtGui.QColor(50, 50, 200), 2, QtCore.Qt.SolidLine)
+
+        pen = QtGui.QPen(QtGui.QColor(50, 50, 200), 1, QtCore.Qt.SolidLine)
+
         qp.setPen(pen)
-        qp.setCompositionMode(QtGui.QPainter.CompositionMode_Xor)
         x1, y1 = self.outer.pixToMouseCoord(normRect.left, normRect.top)
         x2, y2 = self.outer.pixToMouseCoord(normRect.right + 1,
                                             normRect.bottom + 1)
+        
+        qp.fillRect(x1,y1,x2-x1,y2-y1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
+
+        qp.setCompositionMode(QtGui.QPainter.CompositionMode_Xor)
         qp.drawLine(x1, y1, x2, y1)
         qp.drawLine(x2, y1, x2, y2)
         qp.drawLine(x2, y2, x1, y2)
         qp.drawLine(x1, y2, x1, y1)
+
         # Draw Select Handles
         pixSize = self.outer.pixSize
         x2, y2 = self.outer.pixToMouseCoord(normRect.right, normRect.bottom)
@@ -76,6 +149,8 @@ class SelectMode:
         qp.drawLine(x2, y2, x2, y2 + pixSize)
         qp.drawLine(x1, y2, x1 + pixSize, y2)
         qp.drawLine(x1 + pixSize, y2, x1 + pixSize, y2 + pixSize)
+
+
 
     def hitSelectRect(self, x, y):
         if not self.selectRect.isEmpty():
