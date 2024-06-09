@@ -508,7 +508,7 @@ class MyEditArea(QtWidgets.QWidget):
         self.drawSpritePixels(qp)
 
         # Draw Select rectangle
-        if not self.SelectModeObj.selectRect.isEmpty():
+        if not self.SelectModeObj.select_rect.isEmpty():
             self.SelectModeObj.drawSelectRect(qp)
 
         if not self.SelectModeObj.pasteRect.isEmpty():

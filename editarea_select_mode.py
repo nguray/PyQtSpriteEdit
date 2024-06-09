@@ -1,11 +1,12 @@
 
+from typing import Any
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 from rect import Rect
 
 class RInt:
     val=0
-    def __init__(self, nv) -> None:
+    def __init__(self, nv: int) -> None:
         self.val = nv
 
 class SelectHandle:
@@ -14,26 +15,26 @@ class SelectHandle:
     def __init__(self) -> None:
         pass
 
-class SelectRect1:
+class SelectRect:
 
-    x1 = RInt(0)
-    y1 = RInt(0)
-    x2 = RInt(0)
-    y2 = RInt(0)
+    left = RInt(0)
+    top = RInt(0)
+    right = RInt(0)
+    bottom = RInt(0)
     TopLeft = SelectHandle()
     TopRight = SelectHandle()
     BottomLeft = SelectHandle()
     BottomRight = SelectHandle()
 
     def __init__(self) -> None:
-        self.TopLeft.x = self.x1
-        self.TopLeft.y = self.y1
-        self.TopRight.x = self.x2
-        self.TopRight.y = self.y1
-        self.BottomLeft.x = self.x1
-        self.BottomLeft.y = self.y2
-        self.BottomRight.x = self.x2
-        self.BottomRight.y = self.y2
+        self.TopLeft.x = self.left
+        self.TopLeft.y = self.top
+        self.TopRight.x = self.right
+        self.TopRight.y = self.top
+        self.BottomLeft.x = self.left
+        self.BottomLeft.y = self.bottom
+        self.BottomRight.x = self.right
+        self.BottomRight.y = self.bottom
 
     def setTopLeft(self,x: int,y: int):
         self.TopLeft.x.val = x
@@ -63,6 +64,20 @@ class SelectRect1:
     def getBottomLeft(self):
         return self.BottomLeft.x.val,self.BottomLeft.y.val
 
+    def isEmpty(self):
+        return ((self.left.val == self.right.val) and (self.top.val == self.bottom.val))
+    
+    def getNormalize(self):
+        l = self.left.val
+        t = self.top.val
+        r = self.right.val
+        b = self.bottom.val
+        if l>r:
+            l,r = r,l
+        if t>b:
+            t,b = b,t
+        return l,t,r,b
+
 
 class SelectMode:
 
@@ -71,7 +86,7 @@ class SelectMode:
     hit_paste_x = -1
     hit_paste_y = -1
 
-    hit_handle = -1
+    hit_corner = None
     hit_pix_x = -1
     hit_pix_y = -1
 
@@ -82,13 +97,13 @@ class SelectMode:
     cpy_width = 0
     cpy_height = 0
 
-    select_rect = SelectRect1()
+    select_rect = SelectRect()
 
     def __init__(self, outer):
         self.outer = outer
-        self.select_rect.setTopLeft(10,20)
-        x, y = self.select_rect.getBottomLeft()
-        pass
+        # self.select_rect.setTopLeft(10,20)
+        # x, y = self.select_rect.getBottomLeft()
+        # pass
 
 
     def initSelectRect(self):
@@ -119,37 +134,44 @@ class SelectMode:
         qp.drawLine(x1, y2, x1, y1)
 
     def drawSelectRect(self, qp):
-        normRect = Rect(self.selectRect.left, self.selectRect.top,
-                         self.selectRect.right, self.selectRect.bottom)
-        normRect.normalize()
+        """
+        """
+        x1,y1,x2,y2 = self.select_rect.getNormalize()
+        #print("x1 : %2d, x2 : %2d" % (x1, x2))
+        if x1!=x2 and y1!=y2:
+            wx1, wy1 = self.outer.pixToMouseCoord(x1, y1)
+            wx2, wy2 = self.outer.pixToMouseCoord(x2 + 1,y2 + 1)
+            qp.fillRect(wx1,wy1,wx2-wx1,wy2-wy1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
 
-        pen = QtGui.QPen(QtGui.QColor(50, 50, 200), 1, QtCore.Qt.SolidLine)
+            qp.setCompositionMode(QtGui.QPainter.CompositionMode_Xor)
 
-        qp.setPen(pen)
-        x1, y1 = self.outer.pixToMouseCoord(normRect.left, normRect.top)
-        x2, y2 = self.outer.pixToMouseCoord(normRect.right + 1,
-                                            normRect.bottom + 1)
-        
-        qp.fillRect(x1,y1,x2-x1,y2-y1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
+            # Draw Frame
+            pen = QtGui.QPen(QtGui.QColor(50, 50, 200), 1, QtCore.Qt.SolidLine)
+            qp.setPen(pen)
+            qp.drawLine(wx1, wy1, wx2, wy1)
+            qp.drawLine(wx2, wy1, wx2, wy2)
+            qp.drawLine(wx2, wy2, wx1, wy2)
+            qp.drawLine(wx1, wy2, wx1, wy1)
 
-        qp.setCompositionMode(QtGui.QPainter.CompositionMode_Xor)
-        qp.drawLine(x1, y1, x2, y1)
-        qp.drawLine(x2, y1, x2, y2)
-        qp.drawLine(x2, y2, x1, y2)
-        qp.drawLine(x1, y2, x1, y1)
+            # Draw corners handle
+            s = int(self.outer.pixSize / 2)
+            qp.fillRect(wx1,wy1,s,s,QtGui.QBrush(QtGui.QColor(50,50,200)))            
+            qp.fillRect(wx2-s,wy1,s,s,QtGui.QBrush(QtGui.QColor(50,50,200)))            
+            qp.fillRect(wx2-s,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(50,50,200)))    
+            qp.fillRect(wx1,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(50,50,200)))    
 
-        # Draw Select Handles
-        pixSize = self.outer.pixSize
-        x2, y2 = self.outer.pixToMouseCoord(normRect.right, normRect.bottom)
-        qp.drawLine(x1 + pixSize, y1, x1 + pixSize, y1 + pixSize)
-        qp.drawLine(x1 + pixSize, y1 + pixSize, x1, y1 + pixSize)
-        qp.drawLine(x2, y1, x2, y1 + pixSize)
-        qp.drawLine(x2, y1 + pixSize, x2 + pixSize, y1 + pixSize)
-        qp.drawLine(x2, y2, x2 + pixSize, y2)
-        qp.drawLine(x2, y2, x2, y2 + pixSize)
-        qp.drawLine(x1, y2, x1 + pixSize, y2)
-        qp.drawLine(x1 + pixSize, y2, x1 + pixSize, y2 + pixSize)
-
+    def hitCorner(self,x,y):
+        l,t,r,b = self.select_rect.getNormalize()
+        if (x==l) and (y==t):
+            return self.select_rect.TopLeft
+        elif (x==r) and (y==t):
+            return self.select_rect.TopRight
+        elif (x==r) and (y==b):
+            return self.select_rect.BottomRight
+        elif (x==l) and (y==b):
+            return self.select_rect.BottomLeft
+        else:
+            return None
 
 
     def hitSelectRect(self, x, y):
@@ -169,94 +191,108 @@ class SelectMode:
 
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
+        if self.outer.InSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
-                if (self.pasteRect.contains(self.x, self.y)):
-                    self.hit_paste = True
-                    self.hit_paste_x = self.x
-                    self.hit_paste_y = self.y
+                if self.select_rect.isEmpty():
+                    self.select_rect.setTopLeft(x,y)
+                    self.select_rect.setBottomRight(x,y)
                 else:
-                    self.hit_paste = False
-                    self.initPasteRect()
-                    self.hit_handle = self.hitSelectRect(self.x, self.y)
-                    if self.hit_handle != -1:
-                        self.hit_pix_x = self.x
-                        self.hit_pix_y = self.y
-                    else:
-                        self.hit_pt = -1
-                        self.selectRect.left = self.x
-                        self.selectRect.top = self.y
-                        self.selectRect.right = self.x
-                        self.selectRect.bottom = self.y
+                    self.hit_corner = self.hitCorner(x,y)
+
+
+                # if (self.pasteRect.contains(self.x, self.y)):
+                #     self.hit_paste = True
+                #     self.hit_paste_x = self.x
+                #     self.hit_paste_y = self.y
+                # else:
+                #     self.hit_paste = False
+                #     self.initPasteRect()
+                #     self.hit_handle = self.hitSelectRect(self.x, self.y)
+                #     if self.hit_handle != -1:
+                #         self.hit_pix_x = self.x
+                #         self.hit_pix_y = self.y
+                #     else:
+                #         self.hit_pt = -1
+                #         self.selectRect.left = self.x
+                #         self.selectRect.top = self.y
+                #         self.selectRect.right = self.x
+                #         self.selectRect.bottom = self.y
                 self.outer.repaint()
 
     def mouseReleaseEvent(self, mouseEvent):
-        self.hit_handle = -1
+        self.hit_corner = None
 
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
-            if self.hit_paste:
-                if (self.x != self.hit_paste_x) or (self.y !=
-                                                    self.hit_paste_y):
-                    dx = self.x - self.hit_paste_x
-                    dy = self.y - self.hit_paste_y
-                    self.outer.restoreSprite()
-                    self.pasteRect.left += dx
-                    self.pasteRect.top += dy
-                    self.pasteRect.right += dx
-                    self.pasteRect.bottom += dy
-                    qp = QtGui.QPainter()
-                    qp.begin(self.outer.sprite)
-                    w = self.cpy_width + 1
-                    h = self.cpy_height + 1
-                    qp.drawImage(
-                        QtCore.QRect(self.pasteRect.left, self.pasteRect.top,
-                                     w, h), self.outer.sprite_cpy,
-                        QtCore.QRect(0, 0, w, h))
-                    qp.end()
-                    self.hit_paste_x = self.x
-                    self.hit_paste_y = self.y
-                    self.outer.repaint()
-            elif self.hit_handle != -1:
-                dx = self.x - self.hit_pix_x
-                dy = self.y - self.hit_pix_y
-                if (dx != 0) or (dy != 0):
-                    self.hit_pix_x = self.x
-                    self.hit_pix_y = self.y
-                    if modifiers == QtCore.Qt.ControlModifier:
-                        self.selectRect.translate(dx, dy)
-                    else:
-                        if (self.hit_handle == 0):  # Pt Haut Gauche
-                            if (self.x < self.selectRect.right):
-                                self.selectRect.left = self.x
-                            if (self.y < self.selectRect.bottom):
-                                self.selectRect.top = self.y
-                        elif (self.hit_handle == 1):  # Pt Haut Droite
-                            if (self.x > self.selectRect.left):
-                                self.selectRect.right = self.x
-                            if (self.y < self.selectRect.bottom):
-                                self.selectRect.top = self.y
-                        elif (self.hit_handle == 2):  # Pt Bas Droite
-                            if (self.x > self.selectRect.left):
-                                self.selectRect.right = self.x
-                            if (self.y > self.selectRect.top):
-                                self.selectRect.bottom = self.y
-                        elif (self.hit_handle == 3):  # Pt Bas Gauche
-                            if (self.x < self.selectRect.right):
-                                self.selectRect.left = self.x
-                            if (self.y > self.selectRect.top):
-                                self.selectRect.bottom = self.y
-                    self.outer.repaint()
-            elif (self.selectRect.right != self.x) or (self.selectRect.bottom
-                                                       != self.y):
-                self.selectRect.right = self.x
-                self.selectRect.bottom = self.y
-                self.outer.repaint()
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+        #modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.outer.InSprite(x, y):
+            if self.hit_corner is not None:
+                self.hit_corner.x.val = x
+                self.hit_corner.y.val = y
+            else:
+                self.select_rect.setBottomRight(x,y)
+            self.outer.repaint()
+
+            # if self.hit_paste:
+            #     if (self.x != self.hit_paste_x) or (self.y !=
+            #                                         self.hit_paste_y):
+            #         dx = self.x - self.hit_paste_x
+            #         dy = self.y - self.hit_paste_y
+            #         self.outer.restoreSprite()
+            #         self.pasteRect.left += dx
+            #         self.pasteRect.top += dy
+            #         self.pasteRect.right += dx
+            #         self.pasteRect.bottom += dy
+            #         qp = QtGui.QPainter()
+            #         qp.begin(self.outer.sprite)
+            #         w = self.cpy_width + 1
+            #         h = self.cpy_height + 1
+            #         qp.drawImage(
+            #             QtCore.QRect(self.pasteRect.left, self.pasteRect.top,
+            #                          w, h), self.outer.sprite_cpy,
+            #             QtCore.QRect(0, 0, w, h))
+            #         qp.end()
+            #         self.hit_paste_x = self.x
+            #         self.hit_paste_y = self.y
+            #         self.outer.repaint()
+            # elif self.hit_handle != -1:
+            #     dx = self.x - self.hit_pix_x
+            #     dy = self.y - self.hit_pix_y
+            #     if (dx != 0) or (dy != 0):
+            #         self.hit_pix_x = self.x
+            #         self.hit_pix_y = self.y
+            #         if modifiers == QtCore.Qt.ControlModifier:
+            #             self.selectRect.translate(dx, dy)
+            #         else:
+            #             if (self.hit_handle == 0):  # Pt Haut Gauche
+            #                 if (self.x < self.selectRect.right):
+            #                     self.selectRect.left = self.x
+            #                 if (self.y < self.selectRect.bottom):
+            #                     self.selectRect.top = self.y
+            #             elif (self.hit_handle == 1):  # Pt Haut Droite
+            #                 if (self.x > self.selectRect.left):
+            #                     self.selectRect.right = self.x
+            #                 if (self.y < self.selectRect.bottom):
+            #                     self.selectRect.top = self.y
+            #             elif (self.hit_handle == 2):  # Pt Bas Droite
+            #                 if (self.x > self.selectRect.left):
+            #                     self.selectRect.right = self.x
+            #                 if (self.y > self.selectRect.top):
+            #                     self.selectRect.bottom = self.y
+            #             elif (self.hit_handle == 3):  # Pt Bas Gauche
+            #                 if (self.x < self.selectRect.right):
+            #                     self.selectRect.left = self.x
+            #                 if (self.y > self.selectRect.top):
+            #                     self.selectRect.bottom = self.y
+            #         self.outer.repaint()
+            # elif (self.selectRect.right != self.x) or (self.selectRect.bottom
+            #                                            != self.y):
+            #     self.selectRect.right = self.x
+            #     self.selectRect.bottom = self.y
+            #     self.outer.repaint()
 
     def keyPressEvent(self, e):
         pass
