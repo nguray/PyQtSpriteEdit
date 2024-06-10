@@ -9,7 +9,7 @@ class RInt:
     def __init__(self, nv: int) -> None:
         self.val = nv
 
-class SelectHandle:
+class SelectCorner:
     x = RInt(0)
     y = RInt(0)
     def __init__(self) -> None:
@@ -21,10 +21,14 @@ class SelectRect:
     top = RInt(0)
     right = RInt(0)
     bottom = RInt(0)
-    TopLeft = SelectHandle()
-    TopRight = SelectHandle()
-    BottomLeft = SelectHandle()
-    BottomRight = SelectHandle()
+    TopLeft = SelectCorner()
+    TopRight = SelectCorner()
+    BottomLeft = SelectCorner()
+    BottomRight = SelectCorner()
+    left_bak = RInt(0)
+    top_bak = RInt(0)
+    right_bak = RInt(0)
+    bottom_bak = RInt(0)
 
     def __init__(self) -> None:
         self.TopLeft.x = self.left
@@ -78,6 +82,30 @@ class SelectRect:
             t,b = b,t
         return l,t,r,b
 
+    def contains(self, x, y):
+        if (x >= self.left.val) and (x <= self.right.val) and \
+            (y >= self.top.val) and (y <= self.bottom.val):
+            return True
+        return False
+    
+    def backup(self):
+        self.left_bak.val   = self.left.val
+        self.top_bak.val    = self.top.val
+        self.right_bak.val  = self.right.val
+        self.bottom_bak.val = self.bottom.val
+
+    def restore(self):
+        self.left.val   = self.left_bak.val
+        self.top.val    = self.top_bak.val
+        self.right.val  = self.right_bak.val
+        self.bottom.val = self.bottom_bak.val
+
+    def offset(self,dx: int,dy: int):
+        self.left.val += dx
+        self.right.val += dx
+        self.top.val += dy
+        self.bottom.val += dy
+
 
 class SelectMode:
 
@@ -98,6 +126,9 @@ class SelectMode:
     cpy_height = 0
 
     select_rect = SelectRect()
+    start_x = 0
+    start_y = 0
+    f_move = False
 
     def __init__(self, outer):
         self.outer = outer
@@ -111,7 +142,10 @@ class SelectMode:
         self.selectRect.right = -1
         self.selectRect.top = -1
         self.selectRect.bottom = -1
-        self.hit_handle = -1
+        self.hit_corner = None
+        self.start_x = 0
+        self.start_y = 0
+        self.f_move = False
         self.hit_pix_x = -1
         self.hit_pix_y = -1
 
@@ -173,22 +207,6 @@ class SelectMode:
         else:
             return None
 
-
-    def hitSelectRect(self, x, y):
-        if not self.selectRect.isEmpty():
-            myRect = Rect(self.selectRect.left, self.selectRect.top,
-                           self.selectRect.right, self.selectRect.bottom)
-            myRect.normalize()
-            if (x == myRect.left) and (y == myRect.top):
-                return 0
-            elif (x == myRect.right) and (y == myRect.top):
-                return 1
-            elif (x == myRect.right) and (y == myRect.bottom):
-                return 2
-            elif (x == myRect.left) and (y == myRect.bottom):
-                return 3
-        return -1
-
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
@@ -200,7 +218,16 @@ class SelectMode:
                     self.select_rect.setBottomRight(x,y)
                 else:
                     self.hit_corner = self.hitCorner(x,y)
-
+                    if self.hit_corner is None:
+                        if self.select_rect.contains(x,y):
+                            self.select_rect.backup()
+                            self.start_x = x
+                            self.start_y = y
+                            self.f_move = True
+                        else:
+                            self.select_rect.setTopLeft(x,y)
+                            self.select_rect.setBottomRight(x,y)
+                self.outer.repaint()
 
                 # if (self.pasteRect.contains(self.x, self.y)):
                 #     self.hit_paste = True
@@ -219,17 +246,23 @@ class SelectMode:
                 #         self.selectRect.top = self.y
                 #         self.selectRect.right = self.x
                 #         self.selectRect.bottom = self.y
-                self.outer.repaint()
 
     def mouseReleaseEvent(self, mouseEvent):
         self.hit_corner = None
+        self.f_move = False
 
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         #modifiers = QtWidgets.QApplication.keyboardModifiers()
         if self.outer.InSprite(x, y):
-            if self.hit_corner is not None:
+            if self.f_move:
+                dx = x - self.start_x
+                dy = y - self.start_y
+                if dx!=0 or dy!=0:
+                    self.select_rect.restore()
+                    self.select_rect.offset(dx,dy)
+            elif self.hit_corner is not None:
                 self.hit_corner.x.val = x
                 self.hit_corner.y.val = y
             else:
