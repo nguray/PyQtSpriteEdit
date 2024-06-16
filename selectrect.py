@@ -107,3 +107,11 @@ class SelectRect:
         self.top.val += dy
         self.bottom.val += dy
 
+    def width(self) -> int:
+        return self.right.val - self.left.val + 1
+    
+    def height(self) -> int:
+        return self.bottom.val - self.top.val + 1
+    
+    
+

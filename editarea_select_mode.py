@@ -166,8 +166,14 @@ class SelectMode:
                     self.select_rect.restore()
                     self.select_rect.offset(dx,dy)
             elif self.hit_corner is not None:
+                sav_x = self.hit_corner.x.val
+                sav_y = self.hit_corner.y.val 
                 self.hit_corner.x.val = x
                 self.hit_corner.y.val = y
+                if self.select_rect.width() < 2 :
+                    self.hit_corner.x.val = sav_x
+                if self.select_rect.height() < 2 :
+                    self.hit_corner.y.val = sav_y
             else:
                 self.select_rect.setBottomRight(x,y)
             self.outer.repaint()
