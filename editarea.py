@@ -169,7 +169,6 @@ class MyEditArea(QtWidgets.QWidget):
         """
             Réinitialser les sélections
         """
-        self.SelectModeObj.initPasteRect()
         self.SelectModeObj.initSelectRect()
         self.DrawPolyLineModeObj.initDrawLine()
         self.DrawRectangleModeObj.initDrawRect()
@@ -315,7 +314,7 @@ class MyEditArea(QtWidgets.QWidget):
             self.SelectModeObj.initSelectRect()
 
     def doCopyRect(self):
-        if not self.SelectModeObj.selectRect.isEmpty():
+        if not self.SelectModeObj.select_rect.isEmpty():
             self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             qp.begin(self.sprite_cpy)
@@ -331,18 +330,20 @@ class MyEditArea(QtWidgets.QWidget):
                              self.SelectModeObj.select_rect.top.val, w, h))
             qp.end()
             self.SelectModeObj.initSelectRect()
+            self.repaint()
 
     def doPasteRect(self):
         if self.SelectModeObj.cpy_width and self.SelectModeObj.cpy_height:
             self.backupSprite()
-            self.SelectModeObj.pasteRect.left = 0
-            self.SelectModeObj.pasteRect.top = 0
-            self.SelectModeObj.pasteRect.right = self.SelectModeObj.cpy_width
-            self.SelectModeObj.pasteRect.bottom = self.SelectModeObj.cpy_height
+
+            self.SelectModeObj.select_rect.setTopLeft(0,0)
+            self.SelectModeObj.select_rect.setBottomRight(
+                self.SelectModeObj.cpy_width-1,self.SelectModeObj.cpy_height-1)
+            self.SelectModeObj.select_rect.mode = 2
             qp = QtGui.QPainter()
             qp.begin(self.sprite)
-            w = self.SelectModeObj.cpy_width + 1
-            h = self.SelectModeObj.cpy_height + 1
+            w = self.SelectModeObj.cpy_width
+            h = self.SelectModeObj.cpy_height
             qp.drawImage(QtCore.QRect(0, 0, w, h), self.sprite_cpy,
                          QtCore.QRect(0, 0, w, h))
             qp.end()
@@ -409,7 +410,6 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doMirrorVertical(self):
         #
-        self.SelectModeObj.initPasteRect()
         self.SelectModeObj.initSelectRect()
         self.DrawPolyLineModeObj.initDrawLine()
         self.DrawRectangleModeObj.initDrawRect()
@@ -429,7 +429,6 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doRotate90Clock(self):
         #
-        self.SelectModeObj.initPasteRect()
         self.SelectModeObj.initSelectRect()
         self.DrawPolyLineModeObj.initDrawLine()
         self.DrawRectangleModeObj.initDrawRect()
@@ -446,7 +445,6 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doRotate90AntiClock(self):
         #
-        self.SelectModeObj.initPasteRect()
         self.SelectModeObj.initSelectRect()
         self.DrawPolyLineModeObj.initDrawLine()
         self.DrawRectangleModeObj.initDrawRect()
@@ -510,9 +508,6 @@ class MyEditArea(QtWidgets.QWidget):
         # Draw Select rectangle
         if not self.SelectModeObj.select_rect.isEmpty():
             self.SelectModeObj.drawSelectRect(qp)
-
-        if not self.SelectModeObj.pasteRect.isEmpty():
-            self.SelectModeObj.drawPasteRect(qp)
 
         if not self.DrawRectangleModeObj.live_rect.isEmpty():
             self.DrawRectangleModeObj.drawLiveRect(qp)
