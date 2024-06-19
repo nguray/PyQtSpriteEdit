@@ -320,15 +320,15 @@ class MyEditArea(QtWidgets.QWidget):
             qp = QtGui.QPainter()
             qp.begin(self.sprite_cpy)
             self.SelectModeObj.cpy_width = \
-                     self.SelectModeObj.selectRect.width()
+                     self.SelectModeObj.select_rect.width()
             self.SelectModeObj.cpy_height = \
-                     self.SelectModeObj.selectRect.height()
-            w = self.SelectModeObj.cpy_width + 1
-            h = self.SelectModeObj.cpy_height + 1
+                     self.SelectModeObj.select_rect.height()
+            w = self.SelectModeObj.cpy_width
+            h = self.SelectModeObj.cpy_height
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.SelectModeObj.selectRect.left,
-                             self.SelectModeObj.selectRect.top, w, h))
+                QtCore.QRect(self.SelectModeObj.select_rect.left.val,
+                             self.SelectModeObj.select_rect.top.val, w, h))
             qp.end()
             self.SelectModeObj.initSelectRect()
 

@@ -4,6 +4,7 @@ from selectcorner import SelectCorner
 
 class SelectRect:
 
+    mode = 0
     left = RInt(0)
     top = RInt(0)
     right = RInt(0)
@@ -58,6 +59,12 @@ class SelectRect:
     def isEmpty(self):
         return ((self.left.val == self.right.val) and (self.top.val == self.bottom.val))
     
+    def empty(self):
+        self.left.val = 0
+        self.right.val = 0
+        self.top.val = 0
+        self.bottom.val = 0
+
     def getNormalize(self):
         l = self.left.val
         t = self.top.val
