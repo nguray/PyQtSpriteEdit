@@ -7,7 +7,6 @@ from selectcorner import SelectCorner
 from selectrect import SelectRect
 
 
-
 class SelectMode:
 
     hit_corner = None
@@ -92,7 +91,6 @@ class SelectMode:
                                 self.select_rect.backup()
                                 self.start_x = x
                                 self.start_y = y
-                                self.f_move = True
                             else:
                                 self.select_rect.setTopLeft(x,y)
                                 self.select_rect.setBottomRight(x,y)
@@ -118,7 +116,6 @@ class SelectMode:
                     self.select_rect.mode = 1
             case 1:
                 self.hit_corner = None
-                self.f_move = False
             case _:
                 self.hit_corner = None
                 self.f_move = False
@@ -134,13 +131,7 @@ class SelectMode:
                     self.select_rect.setBottomRight(x,y)
                     self.outer.repaint()
                 case 1:
-                    if self.f_move:
-                        dx = x - self.start_x
-                        dy = y - self.start_y
-                        if dx!=0 or dy!=0:
-                            self.select_rect.restore()
-                            self.select_rect.offset(dx,dy)
-                    elif self.hit_corner is not None:
+                    if self.hit_corner is not None:
                         sav_x = self.hit_corner.x.val
                         sav_y = self.hit_corner.y.val 
                         self.hit_corner.x.val = x
@@ -149,6 +140,12 @@ class SelectMode:
                             self.hit_corner.x.val = sav_x
                         if self.select_rect.height() < 2 :
                             self.hit_corner.y.val = sav_y
+                    else:
+                        dx = x - self.start_x
+                        dy = y - self.start_y
+                        if dx!=0 or dy!=0:
+                            self.select_rect.restore()
+                            self.select_rect.offset(dx,dy)
                     self.outer.repaint()
                 case _:
                     if self.f_move:

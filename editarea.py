@@ -509,7 +509,7 @@ class MyEditArea(QtWidgets.QWidget):
         if not self.SelectModeObj.select_rect.isEmpty():
             self.SelectModeObj.drawSelectRect(qp)
 
-        if not self.DrawRectangleModeObj.live_rect.isEmpty():
+        if not self.DrawRectangleModeObj.select_rect.isEmpty():
             self.DrawRectangleModeObj.drawLiveRect(qp)
 
         if not self.DrawEllipseModeObj.live_rect.isEmpty():

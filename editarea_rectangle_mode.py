@@ -3,137 +3,132 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 from rect import Rect
+from selectcorner import SelectCorner
+from selectrect import SelectRect
 
 class RectangleMode:
 
-    live_rect = Rect(-1, -1, -1, -1)
-    hit_handle = -1
-    hit_pix_x = -1
-    hit_pix_y = -1
+    select_rect = SelectRect()
+    start_x = 0
+    start_y = 0
 
     def __init__(self, outer):
         self.outer = outer
 
     def initDrawRect(self):
-        self.live_rect.left = -1
-        self.live_rect.right = -1
-        self.live_rect.top = -1
-        self.live_rect.bottom = -1
-        self.hit_handle = -1
-        self.hit_pix_x = -1
-        self.hit_pix_y = -1
+        self.hit_corner = None
+        self.start_x = 0
+        self.start_y = 0
+        self.select_rect.empty()
+        self.select_rect.mode = 0
 
-    def hitLiveRect(self, x, y):
-        if not self.live_rect.isEmpty():
-            myRect = Rect(self.live_rect.left, self.live_rect.top,
-                           self.live_rect.right, self.live_rect.bottom)
-            myRect.normalize()
-            if (x == myRect.left) and (y == myRect.top):
-                return 0
-            elif (x == myRect.right) and (y == myRect.top):
-                return 1
-            elif (x == myRect.right) and (y == myRect.bottom):
-                return 2
-            elif (x == myRect.left) and (y == myRect.bottom):
-                return 3
-        return -1
+    def hitCorner(self,x,y):
+        l,t,r,b = self.select_rect.getNormalize()
+        if (x==l) and (y==t):
+            return self.select_rect.TopLeft
+        elif (x==r) and (y==t):
+            return self.select_rect.TopRight
+        elif (x==r) and (y==b):
+            return self.select_rect.BottomRight
+        elif (x==l) and (y==b):
+            return self.select_rect.BottomLeft
+        else:
+            return None
 
     def drawLiveRect(self, qp):
-        myRect = Rect(self.live_rect.left, self.live_rect.top,
-                       self.live_rect.right, self.live_rect.bottom)
-        myRect.normalize()
-        x1, y1 = self.outer.pixToMouseCoord(myRect.left, myRect.top)
-        x2, y2 = self.outer.pixToMouseCoord(myRect.right, myRect.bottom)
-        p1 = QtGui.QPen(QtGui.QColor(0, 0, 255, 255), 2)
-        qp.setPen(p1)
-        qp.setBrush(QtGui.QBrush(QtGui.QColor(128, 128, 255, 255)))
-        pixSize = self.outer.pixSize
-        if self.outer.InSprite(myRect.left, myRect.top):
-            qp.drawRect(x1, y1, pixSize, pixSize)
-        if self.outer.InSprite(myRect.right, myRect.top):
-            qp.drawRect(x2, y1, pixSize, pixSize)
-        if self.outer.InSprite(myRect.right, myRect.bottom):
-            qp.drawRect(x2, y2, pixSize, pixSize)
-        if self.outer.InSprite(myRect.left, myRect.bottom):
-            qp.drawRect(x1, y2, pixSize, pixSize)
+        x1,y1,x2,y2 = self.select_rect.getNormalize()
+        #print("x1 : %2d, x2 : %2d" % (x1, x2))
+        if x1!=x2 and y1!=y2:
+            wx1, wy1 = self.outer.pixToMouseCoord(x1, y1)
+            wx2, wy2 = self.outer.pixToMouseCoord(x2 + 1,y2 + 1)
+            qp.fillRect(wx1,wy1,wx2-wx1,wy2-wy1,QtGui.QBrush(QtGui.QColor(0,0,255,16)))
+
+            # Draw corners handle
+            s = int(self.outer.pixSize*0.7)
+            qp.fillRect(wx1,wy1,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,32)))            
+            qp.fillRect(wx2-s,wy1,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,32)))            
+            qp.fillRect(wx2-s,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,32)))    
+            qp.fillRect(wx1,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,32)))    
 
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        if self.outer.InSprite(self.x, self.y):
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+
+        if self.outer.InSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
-                self.hit_handle = self.hitLiveRect(self.x, self.y)
-                if self.hit_handle != -1:
-                    self.hit_pix_x = self.x
-                    self.hit_pix_y = self.y
-                else:
-                    self.outer.backupSprite()
-                    self.live_rect.left = self.x
-                    self.live_rect.top = self.y
-                    self.live_rect.right = self.x
-                    self.live_rect.bottom = self.y
-                self.outer.repaint()
+                match self.select_rect.mode:
+                    case 0:
+                        self.outer.backupSprite()
+                        self.select_rect.setTopLeft(x,y)
+                        self.select_rect.setBottomRight(x,y)
+                    case 1:
+                        self.hit_corner = self.hitCorner(x,y)
+                        if self.hit_corner is None:
+                            if self.select_rect.contains(x,y):
+                                self.select_rect.backup()
+                                self.start_x = x
+                                self.start_y = y
+                            else:
+                                self.select_rect.setTopLeft(x,y)
+                                self.select_rect.setBottomRight(x,y)
+                                self.select_rect.mode = 0
+                        self.outer.repaint()
+                    case _:
+                        pass
 
     def mouseReleaseEvent(self, mouseEvent):
-        if not self.live_rect.isEmpty():
-            self.live_rect.normalize()
-        self.hit_handle = -1
+        match self.select_rect.mode:
+            case 0:
+                if not self.select_rect.isEmpty():
+                    self.select_rect.normalize()
+                    self.select_rect.mode = 1
+            case 1:
+                self.hit_corner = None
+            case _:
+                pass
 
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
-            if mouseEvent.buttons() == QtCore.Qt.LeftButton:
-                if self.hit_handle != -1:
-                    dx = self.x - self.hit_pix_x
-                    dy = self.y - self.hit_pix_y
-                    if (dx != 0) or (dy != 0):
-                        self.hit_pix_x = self.x
-                        self.hit_pix_y = self.y
-                        if modifiers == QtCore.Qt.ControlModifier:
-                            self.live_rect.translate(dx, dy)
-                        else:
-                            if (self.hit_handle == 0):  # Pt Haut Gauche
-                                if (self.x < self.live_rect.right):
-                                    self.live_rect.left = self.x
-                                if (self.y < self.live_rect.bottom):
-                                    self.live_rect.top = self.y
-                            elif (self.hit_handle == 1):  # Pt Haut Droite
-                                if (self.x > self.live_rect.left):
-                                    self.live_rect.right = self.x
-                                if (self.y < self.live_rect.bottom):
-                                    self.live_rect.top = self.y
-                            elif (self.hit_handle == 2):  # Pt Bas Droite
-                                if (self.x > self.live_rect.left):
-                                    self.live_rect.right = self.x
-                                if (self.y > self.live_rect.top):
-                                    self.live_rect.bottom = self.y
-                            elif (self.hit_handle == 3):  # Pt Bas Gauche
-                                if (self.x < self.live_rect.right):
-                                    self.live_rect.left = self.x
-                                if (self.y > self.live_rect.top):
-                                    self.live_rect.bottom = self.y
-                        self.outer.restoreSprite()
-                        qp = QtGui.QPainter(self.outer.sprite)
-                        qp.setPen(self.outer.foregroundColor)
-                        qp.drawRect(self.live_rect.left, self.live_rect.top,
-                                    self.live_rect.width(),
-                                    self.live_rect.height())
-                        self.outer.repaint()
-                elif (self.live_rect.right != self.x) or (self.live_rect.bottom
-                                                          != self.y):
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+        #modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.outer.InSprite(x, y):
+            match self.select_rect.mode:
+                case 0:
+                    self.select_rect.setBottomRight(x,y)
                     self.outer.restoreSprite()
                     qp = QtGui.QPainter(self.outer.sprite)
                     qp.setPen(self.outer.foregroundColor)
-                    self.live_rect.right = self.x
-                    self.live_rect.bottom = self.y
-                    myRect = Rect(self.live_rect.left, self.live_rect.top,
-                                   self.live_rect.right, self.live_rect.bottom)
-                    myRect.normalize()
-                    qp.drawRect(myRect.left, myRect.top, myRect.width(),
-                                myRect.height())
+                    qp.drawRect(self.select_rect.left.val, self.select_rect.top.val,
+                                self.select_rect.width()-1,
+                                self.select_rect.height()-1)
                     self.outer.repaint()
+                case 1:
+                    if self.hit_corner is not None:
+                        sav_x = self.hit_corner.x.val
+                        sav_y = self.hit_corner.y.val 
+                        self.hit_corner.x.val = x
+                        self.hit_corner.y.val = y
+                        if self.select_rect.width() < 2 :
+                            self.hit_corner.x.val = sav_x
+                        if self.select_rect.height() < 2 :
+                            self.hit_corner.y.val = sav_y
+                    else:
+                        dx = x - self.start_x
+                        dy = y - self.start_y
+                        if dx!=0 or dy!=0:
+                            self.select_rect.restore()
+                            self.select_rect.offset(dx,dy)
+
+                    self.outer.restoreSprite()
+                    qp = QtGui.QPainter(self.outer.sprite)
+                    qp.setPen(self.outer.foregroundColor)
+                    qp.drawRect(self.select_rect.left.val, self.select_rect.top.val,
+                                self.select_rect.width()-1,
+                                self.select_rect.height()-1)
+                    self.outer.repaint()
+
+                case _:
+                    pass
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Return or e.key() == QtCore.Qt.Key_Enter:
