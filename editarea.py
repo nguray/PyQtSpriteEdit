@@ -453,13 +453,6 @@ class MyEditArea(QtWidgets.QWidget):
         if self.CurEditModeObj.select_rect is not None:
             self.CurEditModeObj.drawSelectHandles(qp)
 
-
-        # if not self.DrawRectangleModeObj.select_rect.isEmpty():
-        #     self.DrawRectangleModeObj.drawLiveRect(qp)
-
-        # if not self.DrawEllipseModeObj.live_rect.isEmpty():
-        #     self.DrawEllipseModeObj.drawLiveEllipse(qp)
-
         # if (self.nb_points>0):
         #    self.drawLivePolyLine(qp)
         #self.DrawPolyLineModeObj.drawLivePolyLine(qp)
