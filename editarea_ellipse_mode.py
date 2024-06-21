@@ -11,6 +11,10 @@ class EllipseMode:
     select_rect = SelectRect()
     start_x = 0
     start_y = 0
+    select_rect_left_bak   = 0
+    select_rect_top_bak    = 0
+    select_rect_right_bak  = 0
+    select_rect_bottom_bak = 0
 
     def __init__(self, outer):
         self.outer = outer
@@ -72,6 +76,10 @@ class EllipseMode:
                         self.outer.backupSprite()
                         self.select_rect.setTopLeft(x,y)
                         self.select_rect.setBottomRight(x,y)
+                        self.select_rect_left_bak   = x
+                        self.select_rect_top_bak    = y
+                        self.select_rect_right_bak  = x
+                        self.select_rect_bottom_bak = y
                     case 1:
                         self.hit_corner = self.hitCorner(x,y)
                         if self.hit_corner is None:
@@ -79,10 +87,19 @@ class EllipseMode:
                                 self.select_rect.backup()
                                 self.start_x = x
                                 self.start_y = y
+                                self.select_rect_left_bak   = self.select_rect.left.val
+                                self.select_rect_top_bak    = self.select_rect.top.val
+                                self.select_rect_right_bak  = self.select_rect.right.val
+                                self.select_rect_bottom_bak = self.select_rect.bottom.val
                             else:
+                                self.select_rect.mode = 0
+                                self.outer.backupSprite()
                                 self.select_rect.setTopLeft(x,y)
                                 self.select_rect.setBottomRight(x,y)
-                                self.select_rect.mode = 0
+                                self.select_rect_left_bak   = x
+                                self.select_rect_top_bak    = y
+                                self.select_rect_right_bak  = x
+                                self.select_rect_bottom_bak = y
                         self.outer.repaint()
                     case _:
                         pass
@@ -96,7 +113,7 @@ class EllipseMode:
             case 1:
                 self.hit_corner = None
             case _:
-                pass
+                self.select_rect.mode = 0
 
     def mouseMoveEvent(self, mouseEvent):
         #drawEllipse
@@ -106,15 +123,20 @@ class EllipseMode:
         if self.outer.InSprite(x, y):
             match self.select_rect.mode:
                 case 0:
-                    self.select_rect.setBottomRight(x,y)
-                    self.outer.restoreSprite()
-                    qp = QtGui.QPainter(self.outer.sprite)
-                    qp.setPen(self.outer.foregroundColor)
-                    qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
-                                self.select_rect.width()-1,
-                                self.select_rect.height()-1)
-                    self.outer.repaint()
+                    if (x!=self.select_rect_right_bak or
+                        y!=self.select_rect_bottom_bak):
+                        self.select_rect_right_bak = x
+                        self.select_rect_bottom_bak = y
+                        self.select_rect.setBottomRight(x,y)
+                        self.outer.restoreSprite()
+                        qp = QtGui.QPainter(self.outer.sprite)
+                        qp.setPen(self.outer.foregroundColor)
+                        qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
+                                    self.select_rect.width()-1,
+                                    self.select_rect.height()-1)
+                        self.outer.repaint()
                 case 1:
+
                     if self.hit_corner is not None:
                         sav_x = self.hit_corner.x.val
                         sav_y = self.hit_corner.y.val 
@@ -124,6 +146,31 @@ class EllipseMode:
                             self.hit_corner.x.val = sav_x
                         if self.select_rect.height() < 2 :
                             self.hit_corner.y.val = sav_y
+
+                        if (self.select_rect_left_bak != self.select_rect.left.val or
+                            self.select_rect_top_bak != self.select_rect.top.val or
+                            self.select_rect_right_bak != self.select_rect.right.val or
+                            self.select_rect_bottom_bak != self.select_rect.bottom.val):
+                            # Store new position
+                            self.select_rect_left_bak = self.select_rect.left.val
+                            self.select_rect_top_bak = self.select_rect.top.val
+                            self.select_rect_right_bak = self.select_rect.right.val
+                            self.select_rect_bottom_bak = self.select_rect.bottom.val
+
+                            self.outer.restoreSprite()
+                            qp = QtGui.QPainter(self.outer.sprite)
+                            qp.setPen(self.outer.foregroundColor)
+                            qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
+                                        self.select_rect.width()-1,
+                                        self.select_rect.height()-1)
+                            self.outer.repaint()
+                        else:
+                            # Restore position 
+                            self.select_rect.left.val = self.select_rect_left_bak
+                            self.select_rect.top.val = self.select_rect_top_bak
+                            self.select_rect.right.val = self.select_rect_right_bak
+                            self.select_rect.bottom.val = self.select_rect_bottom_bak
+
                     else:
                         dx = x - self.start_x
                         dy = y - self.start_y
@@ -131,13 +178,27 @@ class EllipseMode:
                             self.select_rect.restore()
                             self.select_rect.offset(dx,dy)
 
-                    self.outer.restoreSprite()
-                    qp = QtGui.QPainter(self.outer.sprite)
-                    qp.setPen(self.outer.foregroundColor)
-                    qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
-                                self.select_rect.width()-1,
-                                self.select_rect.height()-1)
-                    self.outer.repaint()
+                            if (self.select_rect_left_bak != self.select_rect.left.val or
+                                self.select_rect_top_bak != self.select_rect.top.val):
+                                # Store new position
+                                self.select_rect_left_bak = self.select_rect.left.val
+                                self.select_rect_top_bak = self.select_rect.top.val
+                                self.select_rect_right_bak = self.select_rect.right.val
+                                self.select_rect_bottom_bak = self.select_rect.bottom.val
+                                self.outer.restoreSprite()
+                                qp = QtGui.QPainter(self.outer.sprite)
+                                qp.setPen(self.outer.foregroundColor)
+                                qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
+                                            self.select_rect.width()-1,
+                                            self.select_rect.height()-1)
+                                self.outer.repaint()
+                            else:
+                               # Restore position 
+                                self.select_rect.left.val = self.select_rect_left_bak
+                                self.select_rect.top.val = self.select_rect_top_bak
+                                self.select_rect.right.val = self.select_rect_right_bak
+                                self.select_rect.bottom.val = self.select_rect_bottom_bak
+                                
                 case _:
                     pass
 

@@ -7,7 +7,6 @@ Created on 24 Nov. 2019
 '''
 import os
 from PyQt5 import QtGui, QtCore, QtWidgets
-from collections import namedtuple
 
 from editarea_pencil_mode import PencilMode
 from editarea_select_mode import SelectMode
@@ -16,7 +15,6 @@ from editarea_rectangle_mode import RectangleMode
 from editarea_fill_mode import FillMode
 from editarea_polyline_mode import PolyLineMode
 
-from rect import Rect
 
 from editmode import EditMode
 
@@ -29,12 +27,6 @@ class MyEditArea(QtWidgets.QWidget):
     pipetForeColor = QtCore.pyqtSignal(QtGui.QColor)
     pipetBackColor = QtCore.pyqtSignal(QtGui.QColor)
     fileNameChanged = QtCore.pyqtSignal(str)
-
-    # EditeModes = namedtuple('EditModes', [
-    #     'Select', 'Pencil', 'Rubber', 'DrawLine', 'DrawRectangle',
-    #     'DrawEllipse', 'Fill'
-    # ])
-    # EDIT = EditeModes(0, 1, 2, 3, 4, 5, 6)
 
     x = -1
     y = -1
@@ -259,11 +251,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doUndo(self):
         self.restoreSprite()
-        self.SelectModeObj.initPasteRect()
-        self.SelectModeObj.initSelectRect()
-        self.initDrawLine()
-        self.initDrawRect()
-        self.initDrawEllipse()
+        self.CurEditModeObj.resetMode()
 
     def doCutRect(self):
         if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
@@ -369,11 +357,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doMirrorHorizontal(self):
         #
-        self.SelectModeObj.initPasteRect()
-        self.SelectModeObj.initSelectRect()
-        self.DrawPolyLineModeObj.initDrawLine()
-        self.DrawRectangleModeObj.initDrawRect()
-        self.DrawEllipseModeObj.initDrawEllipse()
+        self.CurEditModeObj.resetMode()
         self.backupSprite()
         #
         h = int(self.nbColumnPix / 2)
@@ -389,10 +373,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doMirrorVertical(self):
         #
-        self.SelectModeObj.initSelectRect()
-        self.DrawPolyLineModeObj.initDrawLine()
-        self.DrawRectangleModeObj.initDrawRect()
-        self.DrawEllipseModeObj.initDrawEllipse()
+        self.CurEditModeObj.resetMode()
         self.backupSprite()
         #
         h = int(self.nbRowPix / 2)
@@ -408,10 +389,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doRotate90Clock(self):
         #
-        self.SelectModeObj.initSelectRect()
-        self.DrawPolyLineModeObj.initDrawLine()
-        self.DrawRectangleModeObj.initDrawRect()
-        self.DrawEllipseModeObj.initDrawEllipse()
+        self.CurEditModeObj.resetMode()
         self.backupSprite()
         #
         for y in range(0, self.nbColumnPix):
@@ -424,10 +402,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doRotate90AntiClock(self):
         #
-        self.SelectModeObj.initSelectRect()
-        self.DrawPolyLineModeObj.initDrawLine()
-        self.DrawRectangleModeObj.initDrawRect()
-        self.DrawEllipseModeObj.initDrawEllipse()
+        self.CurEditModeObj.resetMode()
         self.backupSprite()
         #
         for y in range(0, self.nbColumnPix):
@@ -449,20 +424,6 @@ class MyEditArea(QtWidgets.QWidget):
             self.setCursor(self.myPickColorCursor)
         else:
             self.CurEditModeObj.keyPressEvent(e)
-#             if (self.edit_mode==self.EDIT.DrawLine):
-#                 #
-#                 self.DrawPolyLineModeObj.keyPressEvent(e)
-#                 #self.initDrawLine()
-#                 #self.repaint()
-#             elif (self.edit_mode==self.EDIT.DrawRectangle):
-#                 #
-#                 self.DrawRectangleModeObj.keyPressEvent(e)
-#                 #self.initDrawRect()
-#                 #self.repaint()
-#             elif (self.edit_mode==self.EDIT.DrawEllipse):
-#                 self.DrawEllipseModeObj.keyPressEvent(e)
-#                 #self.initDrawRect()
-#                 #self.repaint()
 
     def keyReleaseEvent(self,e):
         if e.key()==QtCore.Qt.Key_Shift:

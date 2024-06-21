@@ -15,6 +15,10 @@ class SelectMode:
     start_x = 0
     start_y = 0
     f_move = False
+    select_rect_left_bak   = 0
+    select_rect_top_bak    = 0
+    select_rect_right_bak  = 0
+    select_rect_bottom_bak = 0
 
     def __init__(self, outer):
         self.outer = outer
@@ -98,6 +102,10 @@ class SelectMode:
                             self.select_rect.backup()
                             self.start_x = x
                             self.start_y = y
+                            self.select_rect_left_bak   = self.select_rect.left.val
+                            self.select_rect_top_bak    = self.select_rect.top.val
+                            self.select_rect_right_bak  = self.select_rect.right.val
+                            self.select_rect_bottom_bak = self.select_rect.bottom.val
                             self.f_move = True
                         else:
                             self.initSelectRect()
@@ -149,20 +157,36 @@ class SelectMode:
                         dx = x - self.start_x
                         dy = y - self.start_y
                         if dx!=0 or dy!=0:
+                            # Restore initial position
                             self.select_rect.restore()
+                            # Compute new paste position
                             self.select_rect.offset(dx,dy)
-                            self.outer.restoreSprite()
-                            qp = QtGui.QPainter()
-                            w = self.outer.sprite_cpy.width()
-                            h = self.outer.sprite_cpy.height()
-                            qp.begin(self.outer.sprite)
-                            qp.drawImage(
-                                QtCore.QRect(self.select_rect.left.val, 
-                                             self.select_rect.top.val,
-                                            w, h), self.outer.sprite_cpy,
-                                QtCore.QRect(0, 0, w, h))
-                            qp.end()
-                            self.outer.repaint()
+                            if (self.select_rect_left_bak != self.select_rect.left.val or
+                                self.select_rect_top_bak != self.select_rect.top.val):
+                                # Store new paste position
+                                self.select_rect_left_bak = self.select_rect.left.val
+                                self.select_rect_top_bak = self.select_rect.top.val
+                                self.select_rect_right_bak = self.select_rect.right.val
+                                self.select_rect_bottom_bak = self.select_rect.bottom.val
+                                self.outer.restoreSprite()
+                                qp = QtGui.QPainter()
+                                w = self.outer.sprite_cpy.width()
+                                h = self.outer.sprite_cpy.height()
+                                qp.begin(self.outer.sprite)
+                                qp.drawImage(
+                                    QtCore.QRect(self.select_rect.left.val, 
+                                                self.select_rect.top.val,
+                                                w, h), self.outer.sprite_cpy,
+                                    QtCore.QRect(0, 0, w, h))
+                                qp.end()
+                                self.outer.repaint()
+
+                            else:
+                                # Restore paste position 
+                                self.select_rect.left.val = self.select_rect_left_bak
+                                self.select_rect.top.val = self.select_rect_top_bak
+                                self.select_rect.right.val = self.select_rect_right_bak
+                                self.select_rect.bottom.val = self.select_rect_bottom_bak
 
     def keyPressEvent(self, e):
         pass

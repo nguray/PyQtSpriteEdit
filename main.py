@@ -24,7 +24,7 @@ class myAbout(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super(myAbout, self).__init__(parent)
         # Create widgets
-        self.l1 = QtWidgets.QLabel("PyQtSpriteEdit version 0.1")
+        self.l1 = QtWidgets.QLabel("PyQtSpriteEdit version 0.2")
         self.l1.setAlignment(QtCore.Qt.AlignCenter)
         self.l2 = QtWidgets.QLabel("Raymond NGUYEN THANH")
         self.l2.setAlignment(QtCore.Qt.AlignCenter)
