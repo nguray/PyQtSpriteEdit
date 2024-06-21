@@ -269,21 +269,17 @@ class MyEditArea(QtWidgets.QWidget):
         if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
         if not self.CurEditModeObj.select_rect.isEmpty():
-    
+            w = self.CurEditModeObj.select_rect.width()
+            h = self.CurEditModeObj.select_rect.height()
+            self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)    
             self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             # Faire une copie de zone
             qp.begin(self.sprite_cpy)
-            self.CurEditModeObj.cpy_width = self.SelCurEditModeObjectModeObj.selectRect.width(
-            )
-            self.CurEditModeObj.cpy_height = self.CurEditModeObj.\
-                selectRect.height()
-            w = self.CurEditModeObj.cpy_width + 1
-            h = self.CurEditModeObj.cpy_height + 1
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.CurEditModeObj.selectRect.left,
-                             self.CurEditModeObj.selectRect.top, w, h))
+                QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
+                             self.CurEditModeObj.select_rect.top.val, w, h))
             qp.end()
             # Effacer la zone
             qp1 = QtGui.QPainter()
@@ -291,25 +287,22 @@ class MyEditArea(QtWidgets.QWidget):
             r, g, b, a = self.backgroundColor.getRgb()
             qp1.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
             qp1.fillRect(
-                QtCore.QRect(self.CurEditModeObj.selectRect.left,
-                             self.CurEditModeObj.selectRect.top, w, h),
+                QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
+                             self.CurEditModeObj.select_rect.top.val, w, h),
                 QtGui.QColor(r, g, b, a))
             qp1.end()
-            self.CurEditModeObj.initSelectRect()
+            self.CurEditModeObj.resetMode()
 
     def doCopyRect(self):
         if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
         if not self.CurEditModeObj.select_rect.isEmpty():
+            w = self.CurEditModeObj.select_rect.width()
+            h = self.CurEditModeObj.select_rect.height()
+            self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
             self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             qp.begin(self.sprite_cpy)
-            self.CurEditModeObj.cpy_width = \
-                     self.CurEditModeObj.select_rect.width()
-            self.CurEditModeObj.cpy_height = \
-                     self.CurEditModeObj.select_rect.height()
-            w = self.CurEditModeObj.cpy_width
-            h = self.CurEditModeObj.cpy_height
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
                 QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
@@ -321,17 +314,15 @@ class MyEditArea(QtWidgets.QWidget):
     def doPasteRect(self):
         if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
-        if self.CurEditModeObj.cpy_width and self.CurEditModeObj.cpy_height:
+        w = self.sprite_cpy.width()
+        h = self.sprite_cpy.height()
+        if w and h:
             self.backupSprite()
-
             self.CurEditModeObj.select_rect.setTopLeft(0,0)
-            self.CurEditModeObj.select_rect.setBottomRight(
-                self.CurEditModeObj.cpy_width-1,self.CurEditModeObj.cpy_height-1)
+            self.CurEditModeObj.select_rect.setBottomRight(w-1,h-1)
             self.CurEditModeObj.select_rect.mode = 2
             qp = QtGui.QPainter()
             qp.begin(self.sprite)
-            w = self.CurEditModeObj.cpy_width
-            h = self.CurEditModeObj.cpy_height
             qp.drawImage(QtCore.QRect(0, 0, w, h), self.sprite_cpy,
                          QtCore.QRect(0, 0, w, h))
             qp.end()

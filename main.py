@@ -3,6 +3,8 @@
 '''
 Created on 24 Nov. 2019
 
+Refactoring for python 3.11 in June 2024
+
 @author: nguray
 '''
 

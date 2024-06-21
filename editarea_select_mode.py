@@ -34,8 +34,6 @@ class SelectMode:
         self.select_rect.empty()
         self.select_rect.mode = 0
         self.f_move = False
-        self.hit_pix_x = -1
-        self.hit_pix_y = -1
 
 
     def drawSelectBackground(self, qp):
@@ -157,9 +155,9 @@ class SelectMode:
                             self.select_rect.offset(dx,dy)
                             self.outer.restoreSprite()
                             qp = QtGui.QPainter()
+                            w = self.outer.sprite_cpy.width()
+                            h = self.outer.sprite_cpy.height()
                             qp.begin(self.outer.sprite)
-                            w = self.cpy_width
-                            h = self.cpy_height
                             qp.drawImage(
                                 QtCore.QRect(self.select_rect.left.val, 
                                              self.select_rect.top.val,
