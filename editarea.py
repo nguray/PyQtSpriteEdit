@@ -163,6 +163,13 @@ class MyEditArea(QtWidgets.QWidget):
         #     if a == action:
         #         self.setEditMode(m)
 
+    def resetSelect(self):
+        """
+        """
+        self.CurEditModeObj.resetMode()
+        # --
+        self.repaint()
+
     def setEditMode(self, m):
         """
         """
@@ -191,8 +198,8 @@ class MyEditArea(QtWidgets.QWidget):
         return w, h
 
     def drawGrid(self, qp):
-        '''
-        '''
+        """
+        """
         col = QtGui.QColor(50, 50, 50)
         qp.setPen(col)
         for iy in range(0, self.nbRowPix + 1):
@@ -231,6 +238,8 @@ class MyEditArea(QtWidgets.QWidget):
             return False
 
     def backupSprite(self):
+        """
+        """
         self.sprite_bak.fill(QtGui.qRgba(0, 0, 0, 0))
         qp = QtGui.QPainter()
         qp.begin(self.sprite_bak)
@@ -240,6 +249,8 @@ class MyEditArea(QtWidgets.QWidget):
         qp.end()
 
     def restoreSprite(self):
+        """
+        """
         self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
         qp = QtGui.QPainter()
         qp.begin(self.sprite)
@@ -250,10 +261,14 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doUndo(self):
+        """
+        """
         self.restoreSprite()
         self.CurEditModeObj.resetMode()
 
     def doCutRect(self):
+        """
+        """
         if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
         if not self.CurEditModeObj.select_rect.isEmpty():
@@ -282,6 +297,8 @@ class MyEditArea(QtWidgets.QWidget):
             self.CurEditModeObj.resetMode()
 
     def doCopyRect(self):
+        """
+        """
         if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
         if not self.CurEditModeObj.select_rect.isEmpty():
@@ -332,6 +349,8 @@ class MyEditArea(QtWidgets.QWidget):
             self.floodFill(x0 - 1, y0, iTargetColor, iNewColor)
 
     def mousePressEvent(self, mouseEvent):
+        """
+        """
         mousePos = mouseEvent.pos()
         self.x, self.y = self.mouseToPixCoord(mousePos.x(), mousePos.y())
         modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -346,9 +365,13 @@ class MyEditArea(QtWidgets.QWidget):
             self.cursorPosChanged.emit(self.x, self.y)
 
     def mouseReleaseEvent(self, mouseEvent):
+        """
+        """
         self.CurEditModeObj.mouseReleaseEvent(mouseEvent)
 
     def mouseMoveEvent(self, mouseEvent):
+        """
+        """
         mousePos = mouseEvent.pos()
         self.x, self.y = self.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
@@ -356,6 +379,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.cursorPosChanged.emit(self.x, self.y)
 
     def doMirrorHorizontal(self):
+        """
+        """
         #
         self.CurEditModeObj.resetMode()
         self.backupSprite()
@@ -372,6 +397,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doMirrorVertical(self):
+        """
+        """
         #
         self.CurEditModeObj.resetMode()
         self.backupSprite()
@@ -388,6 +415,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doRotate90Clock(self):
+        """
+        """
         #
         self.CurEditModeObj.resetMode()
         self.backupSprite()
@@ -401,6 +430,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doRotate90AntiClock(self):
+        """
+        """
         #
         self.CurEditModeObj.resetMode()
         self.backupSprite()
@@ -414,10 +445,14 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def setEditSprite(self, sprite):
+        """
+        """
         self.sprite = sprite
         self.repaint()
 
     def keyPressEvent(self, e):
+        """
+        """
         if e.key() == QtCore.Qt.Key_Space:
             self.setEditMode(self.prev_edit_mode)
         elif e.key()==QtCore.Qt.Key_Shift:
@@ -426,11 +461,15 @@ class MyEditArea(QtWidgets.QWidget):
             self.CurEditModeObj.keyPressEvent(e)
 
     def keyReleaseEvent(self,e):
+        """
+        """
         if e.key()==QtCore.Qt.Key_Shift:
             self.setCursor(QtCore.Qt.ArrowCursor)
 
 
     def paintEvent(self, e):
+        """
+        """
 
         qp = QtGui.QPainter()
 
@@ -467,13 +506,16 @@ class MyEditArea(QtWidgets.QWidget):
         qp.end()
 
     def dragEnterEvent(self, e):
+        """
+        """
         if e.mimeData().hasUrls():
             e.accept()
         else:
             e.ignore()
 
     def dropEvent(self, event):
-
+        """
+        """
         if event.mimeData().hasUrls():
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
