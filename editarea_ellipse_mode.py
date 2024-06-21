@@ -11,8 +11,13 @@ class EllipseMode:
     hit_pix_x = -1
     hit_pix_y = -1
 
+    select_rect = None
+
     def __init__(self, outer):
         self.outer = outer
+
+    def resetMode(self):
+        self.initDrawEllipse()
 
     def initDrawEllipse(self):
         self.live_rect.left = -1

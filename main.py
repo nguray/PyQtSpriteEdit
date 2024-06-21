@@ -13,6 +13,8 @@ from editarea import MyEditArea
 from colorbar import MyColorBar
 from spritebar import SpriteBar
 
+from editmode import EditMode
+
 # MSYS2 Shell : pyrcc5 -o resources.py qtspriteedit.qrc
 import  resources
 
@@ -122,32 +124,32 @@ class MyWindow(QtWidgets.QMainWindow):
     def setSelectEditMode(self):
         self.unCheckAllToolBarBtns()
         self.selectRectModeAction.setChecked(True)
-        self.editarea.setEditMode(self.editarea.EDIT.Select)
+        self.editarea.setEditMode(EditMode.SELECT)
 
     def setPencilEditMode(self):
         self.unCheckAllToolBarBtns()
         self.pencilModeAction.setChecked(True)
-        self.editarea.setEditMode(self.editarea.EDIT.Pencil)
+        self.editarea.setEditMode(EditMode.PENCIL)
 
     def setLineEditMode(self):
         self.unCheckAllToolBarBtns()
         self.lineModeAction.setChecked(True)
-        self.editarea.setEditMode(self.editarea.EDIT.DrawLine)
+        self.editarea.setEditMode(EditMode.POLYLINE)
 
     def setRectangleEditMode(self):
         self.unCheckAllToolBarBtns()
         self.rectangleModeAction.setChecked(True)
-        self.editarea.setEditMode(self.editarea.EDIT.DrawRectangle)
+        self.editarea.setEditMode(EditMode.RECTANGLE)
 
     def setEllipseEditMode(self):
         self.unCheckAllToolBarBtns()
         self.ellipseModeAction.setChecked(True)
-        self.editarea.setEditMode(self.editarea.EDIT.DrawEllipse)
+        self.editarea.setEditMode(EditMode.ELLIPSE)
 
     def setFillEditMode(self):
         self.unCheckAllToolBarBtns()
         self.fillerModeAction.setChecked(True)
-        self.editarea.setEditMode(self.editarea.EDIT.Fill)
+        self.editarea.setEditMode(EditMode.FILL)
 
     def undoEdit(self):
         self.editarea.doUndo()

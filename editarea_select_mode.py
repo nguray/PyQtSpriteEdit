@@ -24,6 +24,9 @@ class SelectMode:
         # x, y = self.select_rect.getBottomLeft()
         # pass
 
+    def resetMode(self):
+        self.initSelectRect()
+
     def initSelectRect(self):
         self.hit_corner = None
         self.start_x = 0
@@ -34,7 +37,8 @@ class SelectMode:
         self.hit_pix_x = -1
         self.hit_pix_y = -1
 
-    def drawSelectRect(self, qp):
+
+    def drawSelectBackground(self, qp):
         """
         """
         x1,y1,x2,y2 = self.select_rect.getNormalize()
@@ -44,21 +48,18 @@ class SelectMode:
             wx2, wy2 = self.outer.pixToMouseCoord(x2 + 1,y2 + 1)
             qp.fillRect(wx1,wy1,wx2-wx1,wy2-wy1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
 
-            # qp.setCompositionMode(QtGui.QPainter.CompositionMode_Xor)
-            # Draw Frame
-            # pen = QtGui.QPen(QtGui.QColor(50, 50, 200), 1, QtCore.Qt.SolidLine)
-            # qp.setPen(pen)
-            # qp.drawLine(wx1, wy1, wx2, wy1)
-            # qp.drawLine(wx2, wy1, wx2, wy2)
-            # qp.drawLine(wx2, wy2, wx1, wy2)
-            # qp.drawLine(wx1, wy2, wx1, wy1)
-
+    def drawSelectHandles(self, qp):
+        x1,y1,x2,y2 = self.select_rect.getNormalize()
+        #print("x1 : %2d, x2 : %2d" % (x1, x2))
+        if x1!=x2 and y1!=y2:
+            wx1, wy1 = self.outer.pixToMouseCoord(x1, y1)
+            wx2, wy2 = self.outer.pixToMouseCoord(x2 + 1,y2 + 1)
             # Draw corners handle
             s = int(self.outer.pixSize*0.7)
             qp.fillRect(wx1,wy1,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
             qp.fillRect(wx2-s,wy1,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
             qp.fillRect(wx2-s,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))    
-            qp.fillRect(wx1,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))    
+            qp.fillRect(wx1,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
 
     def hitCorner(self,x,y):
         l,t,r,b = self.select_rect.getNormalize()

@@ -14,9 +14,14 @@ class PolyLineMode:
     nb_points = 0
     list_points = []
     selected_point = None
+    select_rect = None
+
 
     def __init__(self, outer):
         self.outer = outer
+
+    def resetMode(self):
+        self.initDrawLine()
 
     def initDrawLine(self):
         self.list_points = []

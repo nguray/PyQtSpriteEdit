@@ -3,8 +3,14 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 
 class PencilMode:
+
+    select_rect = None
+
     def __init__(self, outer):
         self.outer = outer
+
+    def resetMode(self):
+        pass
 
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()

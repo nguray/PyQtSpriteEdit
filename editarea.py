@@ -18,6 +18,8 @@ from editarea_polyline_mode import PolyLineMode
 
 from rect import Rect
 
+from editmode import EditMode
+
 class MyEditArea(QtWidgets.QWidget):
     '''
     classdocs
@@ -28,11 +30,11 @@ class MyEditArea(QtWidgets.QWidget):
     pipetBackColor = QtCore.pyqtSignal(QtGui.QColor)
     fileNameChanged = QtCore.pyqtSignal(str)
 
-    EditeModes = namedtuple('EditModes', [
-        'Select', 'Pencil', 'Rubber', 'DrawLine', 'DrawRectangle',
-        'DrawEllipse', 'Fill'
-    ])
-    EDIT = EditeModes(0, 1, 2, 3, 4, 5, 6)
+    # EditeModes = namedtuple('EditModes', [
+    #     'Select', 'Pencil', 'Rubber', 'DrawLine', 'DrawRectangle',
+    #     'DrawEllipse', 'Fill'
+    # ])
+    # EDIT = EditeModes(0, 1, 2, 3, 4, 5, 6)
 
     x = -1
     y = -1
@@ -52,7 +54,6 @@ class MyEditArea(QtWidgets.QWidget):
     sprite_cpy = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
 
     CurEditModeObj = None
-
 
     def __init__(self, parent=None):
         '''
@@ -108,13 +109,17 @@ class MyEditArea(QtWidgets.QWidget):
         ]
 
         # -- Instancier les objects des classes
-        self.DrawPolyLineModeObj = PolyLineMode(self)
-        self.PencilModeObj = PencilMode(self)
-        self.SelectModeObj = SelectMode(self)
-        self.DrawRectangleModeObj = RectangleMode(self)
-        self.DrawEllipseModeObj = EllipseMode(self)
-        self.FillModeObj = FillMode(self)
-        self.CurEditModeObj = self.SelectModeObj
+
+        self.DictModes = {
+            EditMode.SELECT : SelectMode(self),
+            EditMode.PENCIL : PencilMode(self),
+            EditMode.POLYLINE : PolyLineMode(self),
+            EditMode.RECTANGLE : RectangleMode(self),
+            EditMode.ELLIPSE : EllipseMode(self),
+            EditMode.FILL : FillMode(self)
+        }
+
+        self.CurEditModeObj = self.DictModes[EditMode.SELECT]
 
         self.show()
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
@@ -124,6 +129,7 @@ class MyEditArea(QtWidgets.QWidget):
     def init32Sprite(self):
         self.pixSize = 12
         self.nbRowPix = 32
+
         self.nbColumnPix = 32
         self.sprite = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
         self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
@@ -165,44 +171,19 @@ class MyEditArea(QtWidgets.QWidget):
         #     if a == action:
         #         self.setEditMode(m)
 
-    def resetSelect(self):
-        """
-            Réinitialser les sélections
-        """
-        self.SelectModeObj.initSelectRect()
-        self.DrawPolyLineModeObj.initDrawLine()
-        self.DrawRectangleModeObj.initDrawRect()
-        self.DrawEllipseModeObj.initDrawEllipse()
-
     def setEditMode(self, m):
         """
         """
         if self.edit_mode != m:
             self.prev_edit_mode = self.edit_mode
             self.edit_mode = m
-            self.resetSelect()
+
             # Changer la forme du curseur de la souris
             #self.setCursor(self.editCursors[self.edit_mode])
 
-            if (self.edit_mode == self.EDIT.Select):  # Select Rectangle Mode
-                self.CurEditModeObj = self.SelectModeObj
+            self.CurEditModeObj = self.DictModes[m]
+            self.CurEditModeObj.resetMode()
 
-            elif (self.edit_mode == self.EDIT.Pencil):  # Pencil Mode
-                self.CurEditModeObj = self.PencilModeObj
-
-            elif (self.edit_mode == self.EDIT.DrawLine):  # Draw line Mode
-                self.CurEditModeObj = self.DrawPolyLineModeObj
-
-            elif (self.edit_mode == self.EDIT.DrawRectangle
-                  ):  # Draw rectangle Mode
-                self.CurEditModeObj = self.DrawRectangleModeObj
-
-            elif (self.edit_mode == self.EDIT.DrawEllipse
-                  ):  # Draw ellipse Mode
-                self.CurEditModeObj = self.DrawEllipseModeObj
-
-            elif (self.edit_mode == self.EDIT.Fill):  # Fill Mode
-                self.CurEditModeObj = self.FillModeObj
             # --
             self.repaint()
 
@@ -285,21 +266,24 @@ class MyEditArea(QtWidgets.QWidget):
         self.initDrawEllipse()
 
     def doCutRect(self):
-        if not self.SelectModeObj.selectRect.isEmpty():
+        if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
+            return
+        if not self.CurEditModeObj.select_rect.isEmpty():
+    
             self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             # Faire une copie de zone
             qp.begin(self.sprite_cpy)
-            self.SelectModeObj.cpy_width = self.SelectModeObj.selectRect.width(
+            self.CurEditModeObj.cpy_width = self.SelCurEditModeObjectModeObj.selectRect.width(
             )
-            self.SelectModeObj.cpy_height = self.SelectModeObj.\
+            self.CurEditModeObj.cpy_height = self.CurEditModeObj.\
                 selectRect.height()
-            w = self.SelectModeObj.cpy_width + 1
-            h = self.SelectModeObj.cpy_height + 1
+            w = self.CurEditModeObj.cpy_width + 1
+            h = self.CurEditModeObj.cpy_height + 1
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.SelectModeObj.selectRect.left,
-                             self.SelectModeObj.selectRect.top, w, h))
+                QtCore.QRect(self.CurEditModeObj.selectRect.left,
+                             self.CurEditModeObj.selectRect.top, w, h))
             qp.end()
             # Effacer la zone
             qp1 = QtGui.QPainter()
@@ -307,43 +291,47 @@ class MyEditArea(QtWidgets.QWidget):
             r, g, b, a = self.backgroundColor.getRgb()
             qp1.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
             qp1.fillRect(
-                QtCore.QRect(self.SelectModeObj.selectRect.left,
-                             self.SelectModeObj.selectRect.top, w, h),
+                QtCore.QRect(self.CurEditModeObj.selectRect.left,
+                             self.CurEditModeObj.selectRect.top, w, h),
                 QtGui.QColor(r, g, b, a))
             qp1.end()
-            self.SelectModeObj.initSelectRect()
+            self.CurEditModeObj.initSelectRect()
 
     def doCopyRect(self):
-        if not self.SelectModeObj.select_rect.isEmpty():
+        if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
+            return
+        if not self.CurEditModeObj.select_rect.isEmpty():
             self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             qp.begin(self.sprite_cpy)
-            self.SelectModeObj.cpy_width = \
-                     self.SelectModeObj.select_rect.width()
-            self.SelectModeObj.cpy_height = \
-                     self.SelectModeObj.select_rect.height()
-            w = self.SelectModeObj.cpy_width
-            h = self.SelectModeObj.cpy_height
+            self.CurEditModeObj.cpy_width = \
+                     self.CurEditModeObj.select_rect.width()
+            self.CurEditModeObj.cpy_height = \
+                     self.CurEditModeObj.select_rect.height()
+            w = self.CurEditModeObj.cpy_width
+            h = self.CurEditModeObj.cpy_height
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.SelectModeObj.select_rect.left.val,
-                             self.SelectModeObj.select_rect.top.val, w, h))
+                QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
+                             self.CurEditModeObj.select_rect.top.val, w, h))
             qp.end()
-            self.SelectModeObj.initSelectRect()
+            self.CurEditModeObj.initSelectRect()
             self.repaint()
 
     def doPasteRect(self):
-        if self.SelectModeObj.cpy_width and self.SelectModeObj.cpy_height:
+        if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
+            return
+        if self.CurEditModeObj.cpy_width and self.CurEditModeObj.cpy_height:
             self.backupSprite()
 
-            self.SelectModeObj.select_rect.setTopLeft(0,0)
-            self.SelectModeObj.select_rect.setBottomRight(
-                self.SelectModeObj.cpy_width-1,self.SelectModeObj.cpy_height-1)
-            self.SelectModeObj.select_rect.mode = 2
+            self.CurEditModeObj.select_rect.setTopLeft(0,0)
+            self.CurEditModeObj.select_rect.setBottomRight(
+                self.CurEditModeObj.cpy_width-1,self.CurEditModeObj.cpy_height-1)
+            self.CurEditModeObj.select_rect.mode = 2
             qp = QtGui.QPainter()
             qp.begin(self.sprite)
-            w = self.SelectModeObj.cpy_width
-            h = self.SelectModeObj.cpy_height
+            w = self.CurEditModeObj.cpy_width
+            h = self.CurEditModeObj.cpy_height
             qp.drawImage(QtCore.QRect(0, 0, w, h), self.sprite_cpy,
                          QtCore.QRect(0, 0, w, h))
             qp.end()
@@ -502,22 +490,27 @@ class MyEditArea(QtWidgets.QWidget):
 
         self.drawGrid(qp)
 
+
+        # Draw Select rectangle
+        if self.CurEditModeObj.select_rect is not None:
+            self.CurEditModeObj.drawSelectBackground(qp)
+
         #
         self.drawSpritePixels(qp)
 
-        # Draw Select rectangle
-        if not self.SelectModeObj.select_rect.isEmpty():
-            self.SelectModeObj.drawSelectRect(qp)
+        if self.CurEditModeObj.select_rect is not None:
+            self.CurEditModeObj.drawSelectHandles(qp)
 
-        if not self.DrawRectangleModeObj.select_rect.isEmpty():
-            self.DrawRectangleModeObj.drawLiveRect(qp)
 
-        if not self.DrawEllipseModeObj.live_rect.isEmpty():
-            self.DrawEllipseModeObj.drawLiveEllipse(qp)
+        # if not self.DrawRectangleModeObj.select_rect.isEmpty():
+        #     self.DrawRectangleModeObj.drawLiveRect(qp)
+
+        # if not self.DrawEllipseModeObj.live_rect.isEmpty():
+        #     self.DrawEllipseModeObj.drawLiveEllipse(qp)
 
         # if (self.nb_points>0):
         #    self.drawLivePolyLine(qp)
-        self.DrawPolyLineModeObj.drawLivePolyLine(qp)
+        #self.DrawPolyLineModeObj.drawLivePolyLine(qp)
 
         # color = self.forewardColor
         # if (self.x>=0) and (self.y>=0):

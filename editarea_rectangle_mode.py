@@ -15,6 +15,9 @@ class RectangleMode:
     def __init__(self, outer):
         self.outer = outer
 
+    def resetMode(self):
+        self.initDrawRect()
+
     def initDrawRect(self):
         self.hit_corner = None
         self.start_x = 0
@@ -34,6 +37,29 @@ class RectangleMode:
             return self.select_rect.BottomLeft
         else:
             return None
+
+    def drawSelectBackground(self, qp):
+        """
+        """
+        x1,y1,x2,y2 = self.select_rect.getNormalize()
+        #print("x1 : %2d, x2 : %2d" % (x1, x2))
+        if x1!=x2 and y1!=y2:
+            wx1, wy1 = self.outer.pixToMouseCoord(x1, y1)
+            wx2, wy2 = self.outer.pixToMouseCoord(x2 + 1,y2 + 1)
+            qp.fillRect(wx1,wy1,wx2-wx1,wy2-wy1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
+
+    def drawSelectHandles(self, qp):
+        x1,y1,x2,y2 = self.select_rect.getNormalize()
+        #print("x1 : %2d, x2 : %2d" % (x1, x2))
+        if x1!=x2 and y1!=y2:
+            wx1, wy1 = self.outer.pixToMouseCoord(x1, y1)
+            wx2, wy2 = self.outer.pixToMouseCoord(x2 + 1,y2 + 1)
+            # Draw corners handle
+            s = int(self.outer.pixSize*0.7)
+            qp.fillRect(wx1,wy1,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
+            qp.fillRect(wx2-s,wy1,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
+            qp.fillRect(wx2-s,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))    
+            qp.fillRect(wx1,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
 
     def drawLiveRect(self, qp):
         x1,y1,x2,y2 = self.select_rect.getNormalize()
