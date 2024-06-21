@@ -10,8 +10,6 @@ from selectrect import SelectRect
 class SelectMode:
 
     hit_corner = None
-    cpy_width = 0
-    cpy_height = 0
 
     select_rect = SelectRect()
     start_x = 0
