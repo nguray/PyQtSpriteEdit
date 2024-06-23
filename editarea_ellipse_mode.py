@@ -87,10 +87,10 @@ class EllipseMode:
                                 self.select_rect.backup()
                                 self.start_x = x
                                 self.start_y = y
-                                self.select_rect_left_bak   = self.select_rect.left.val
-                                self.select_rect_top_bak    = self.select_rect.top.val
-                                self.select_rect_right_bak  = self.select_rect.right.val
-                                self.select_rect_bottom_bak = self.select_rect.bottom.val
+                                self.select_rect_left_bak   = self.select_rect.left
+                                self.select_rect_top_bak    = self.select_rect.top
+                                self.select_rect_right_bak  = self.select_rect.right
+                                self.select_rect_bottom_bak = self.select_rect.bottom
                             else:
                                 self.select_rect.mode = 0
                                 self.outer.backupSprite()
@@ -131,7 +131,7 @@ class EllipseMode:
                         self.outer.restoreSprite()
                         qp = QtGui.QPainter(self.outer.sprite)
                         qp.setPen(self.outer.foregroundColor)
-                        qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
+                        qp.drawEllipse(self.select_rect.left, self.select_rect.top,
                                     self.select_rect.width()-1,
                                     self.select_rect.height()-1)
                         self.outer.repaint()
@@ -147,29 +147,29 @@ class EllipseMode:
                         if self.select_rect.height() < 2 :
                             self.hit_corner.y.val = sav_y
 
-                        if (self.select_rect_left_bak != self.select_rect.left.val or
-                            self.select_rect_top_bak != self.select_rect.top.val or
-                            self.select_rect_right_bak != self.select_rect.right.val or
-                            self.select_rect_bottom_bak != self.select_rect.bottom.val):
+                        if (self.select_rect_left_bak != self.select_rect.left or
+                            self.select_rect_top_bak != self.select_rect.top or
+                            self.select_rect_right_bak != self.select_rect.right or
+                            self.select_rect_bottom_bak != self.select_rect.bottom):
                             # Store new position
-                            self.select_rect_left_bak = self.select_rect.left.val
-                            self.select_rect_top_bak = self.select_rect.top.val
-                            self.select_rect_right_bak = self.select_rect.right.val
-                            self.select_rect_bottom_bak = self.select_rect.bottom.val
+                            self.select_rect_left_bak = self.select_rect.left
+                            self.select_rect_top_bak = self.select_rect.top
+                            self.select_rect_right_bak = self.select_rect.right
+                            self.select_rect_bottom_bak = self.select_rect.bottom
 
                             self.outer.restoreSprite()
                             qp = QtGui.QPainter(self.outer.sprite)
                             qp.setPen(self.outer.foregroundColor)
-                            qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
+                            qp.drawEllipse(self.select_rect.left, self.select_rect.top,
                                         self.select_rect.width()-1,
                                         self.select_rect.height()-1)
                             self.outer.repaint()
                         else:
                             # Restore position 
-                            self.select_rect.left.val = self.select_rect_left_bak
-                            self.select_rect.top.val = self.select_rect_top_bak
-                            self.select_rect.right.val = self.select_rect_right_bak
-                            self.select_rect.bottom.val = self.select_rect_bottom_bak
+                            self.select_rect.left = self.select_rect_left_bak
+                            self.select_rect.top = self.select_rect_top_bak
+                            self.select_rect.right = self.select_rect_right_bak
+                            self.select_rect.bottom = self.select_rect_bottom_bak
 
                     else:
                         dx = x - self.start_x
@@ -178,26 +178,26 @@ class EllipseMode:
                             self.select_rect.restore()
                             self.select_rect.offset(dx,dy)
 
-                            if (self.select_rect_left_bak != self.select_rect.left.val or
-                                self.select_rect_top_bak != self.select_rect.top.val):
+                            if (self.select_rect_left_bak != self.select_rect.left or
+                                self.select_rect_top_bak != self.select_rect.top):
                                 # Store new position
-                                self.select_rect_left_bak = self.select_rect.left.val
-                                self.select_rect_top_bak = self.select_rect.top.val
-                                self.select_rect_right_bak = self.select_rect.right.val
-                                self.select_rect_bottom_bak = self.select_rect.bottom.val
+                                self.select_rect_left_bak = self.select_rect.left
+                                self.select_rect_top_bak = self.select_rect.top
+                                self.select_rect_right_bak = self.select_rect.right
+                                self.select_rect_bottom_bak = self.select_rect.bottom
                                 self.outer.restoreSprite()
                                 qp = QtGui.QPainter(self.outer.sprite)
                                 qp.setPen(self.outer.foregroundColor)
-                                qp.drawEllipse(self.select_rect.left.val, self.select_rect.top.val,
+                                qp.drawEllipse(self.select_rect.left, self.select_rect.top,
                                             self.select_rect.width()-1,
                                             self.select_rect.height()-1)
                                 self.outer.repaint()
                             else:
                                # Restore position 
-                                self.select_rect.left.val = self.select_rect_left_bak
-                                self.select_rect.top.val = self.select_rect_top_bak
-                                self.select_rect.right.val = self.select_rect_right_bak
-                                self.select_rect.bottom.val = self.select_rect_bottom_bak
+                                self.select_rect.left = self.select_rect_left_bak
+                                self.select_rect.top = self.select_rect_top_bak
+                                self.select_rect.right = self.select_rect_right_bak
+                                self.select_rect.bottom = self.select_rect_bottom_bak
                                 
                 case _:
                     pass
