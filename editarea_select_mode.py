@@ -137,14 +137,14 @@ class SelectMode:
                     self.outer.repaint()
                 case 1:
                     if self.hit_corner is not None:
-                        sav_x = self.hit_corner.x.val
-                        sav_y = self.hit_corner.y.val 
-                        self.hit_corner.x.val = x
-                        self.hit_corner.y.val = y
+                        sav_x = self.hit_corner.x
+                        sav_y = self.hit_corner.y
+                        self.hit_corner.x = x
+                        self.hit_corner.y = y
                         if self.select_rect.width() < 2 :
-                            self.hit_corner.x.val = sav_x
+                            self.hit_corner.x = sav_x
                         if self.select_rect.height() < 2 :
-                            self.hit_corner.y.val = sav_y
+                            self.hit_corner.y = sav_y
                     else:
                         dx = x - self.start_x
                         dy = y - self.start_y

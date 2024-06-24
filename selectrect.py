@@ -1,6 +1,5 @@
 
-from rint import RInt
-from selectcorner import SelectCorner
+from selectcorner import SelectCorner,RInt
 
 class SelectRect:
 
@@ -13,48 +12,48 @@ class SelectRect:
     TopRight = SelectCorner()
     BottomLeft = SelectCorner()
     BottomRight = SelectCorner()
-    left_bak = RInt(0)
-    top_bak = RInt(0)
-    right_bak = RInt(0)
-    bottom_bak = RInt(0)
+    _left_bak = 0
+    _top_bak = 0
+    _right_bak = 0
+    _bottom_bak = 0
 
     def __init__(self) -> None:
-        self.TopLeft.x = self._left
-        self.TopLeft.y = self._top
-        self.TopRight.x = self._right
-        self.TopRight.y = self._top
-        self.BottomLeft.x = self._left
-        self.BottomLeft.y = self._bottom
-        self.BottomRight.x = self._right
-        self.BottomRight.y = self._bottom
+        self.TopLeft._x = self._left
+        self.TopLeft._y = self._top
+        self.TopRight._x = self._right
+        self.TopRight._y = self._top
+        self.BottomLeft._x = self._left
+        self.BottomLeft._y = self._bottom
+        self.BottomRight._x = self._right
+        self.BottomRight._y = self._bottom
 
     def setTopLeft(self,x: int,y: int):
-        self.TopLeft.x.val = x
-        self.TopLeft.y.val = y
+        self.TopLeft.x = x
+        self.TopLeft.y = y
     
     def getTopLeft(self) -> tuple[int, int]:
-        return self.TopLeft.x.val,self.TopLeft.y.val
+        return self.TopLeft.x,self.TopLeft.y
 
     def setTopRight(self,x: int,y: int):
-        self.TopRight.x.val = x
-        self.TopRight.y.val = y
+        self.TopRight.x = x
+        self.TopRight.y = y
 
     def getTopRight(self) -> tuple[int, int]:
-        return self.TopRight.x.val,self.TopRight.y.val
+        return self.TopRight.x,self.TopRight.y
 
     def setBottomRight(self,x: int,y: int):
-        self.BottomRight.x.val = x
-        self.BottomRight.y.val = y
+        self.BottomRight.x = x
+        self.BottomRight.y = y
 
     def getBottomRight(self) -> tuple[int, int]:
-        return self.BottomRight.x.val,self.BottomRight.y.val
+        return self.BottomRight.x,self.BottomRight.y
 
     def setBottomLeft(self,x: int,y: int):
-        self.BottomLeft.x.val = x
-        self.BottomLeft.y.val = y
+        self.BottomLeft.x = x
+        self.BottomLeft.y = y
 
     def getBottomLeft(self) -> tuple[int, int]:
-        return self.BottomLeft.x.val,self.BottomLeft.y.val
+        return self.BottomLeft.x,self.BottomLeft.y
 
     def isEmpty(self):
         return ((self._left.val == self._right.val) and (self._top.val == self._bottom.val))
@@ -97,16 +96,16 @@ class SelectRect:
         return False
     
     def backup(self):
-        self.left_bak.val   = self._left.val
-        self.top_bak.val    = self._top.val
-        self.right_bak.val  = self._right.val
-        self.bottom_bak.val = self._bottom.val
+        self._left_bak   = self._left.val
+        self._top_bak    = self._top.val
+        self._right_bak  = self._right.val
+        self._bottom_bak = self._bottom.val
 
     def restore(self):
-        self._left.val   = self.left_bak.val
-        self._top.val    = self.top_bak.val
-        self._right.val  = self.right_bak.val
-        self._bottom.val = self.bottom_bak.val
+        self._left.val   = self._left_bak
+        self._top.val    = self._top_bak
+        self._right.val  = self._right_bak
+        self._bottom.val = self._bottom_bak
 
     def offset(self,dx: int,dy: int):
         self._left.val += dx
