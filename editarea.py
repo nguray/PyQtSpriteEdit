@@ -28,30 +28,32 @@ class MyEditArea(QtWidgets.QWidget):
     pipetBackColor = QtCore.pyqtSignal(QtGui.QColor)
     fileNameChanged = QtCore.pyqtSignal(str)
 
-    x = -1
-    y = -1
-
-    edit_mode = 0
-    prev_edit_mode = 0
-
-    foregroundColor = QtGui.QColor(0, 0, 255, 255)
-    backgroundColor = QtGui.QColor(0, 0, 0, 0)
-
-    pixSize = 12
-    nbRowPix = 32
-    nbColumnPix = 32
-
-    sprite = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-    sprite_bak = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-    sprite_cpy = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-
-    CurEditModeObj = None
 
     def __init__(self, parent=None):
         '''
         Constructor
         '''
         QtWidgets.QWidget.__init__(self, parent)
+
+        self.x = -1
+        self.y = -1
+
+        self.edit_mode = 0
+        self.prev_edit_mode = 0
+
+        self.foregroundColor = QtGui.QColor(0, 0, 255, 255)
+        self.backgroundColor = QtGui.QColor(0, 0, 0, 0)
+
+        self.pixSize = 12
+        self.nbRowPix = 32
+        self.nbColumnPix = 32
+
+        self.sprite = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
+        self.sprite_bak = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
+        self.sprite_cpy = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
+
+        self.CurEditModeObj = None
+        
 
         self.myPickColorCursor = QtGui.QCursor(QtGui.QPixmap(":res/PickColor.png"),6,23)
         # ----------------------------------------------------------------------

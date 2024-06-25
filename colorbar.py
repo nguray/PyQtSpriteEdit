@@ -12,8 +12,7 @@ class ColorRect(QtCore.QRect):
     """
     Color Cell Rectangle
     """
-    color = QtGui.QColor(0, 0, 0, 0)
-
+ 
     def __init__(self, c):
         QtCore.QRect.__init__(self)
         self.color = c
@@ -53,18 +52,19 @@ class MyColorBar(QtWidgets.QWidget):
     foreColorChanged = QtCore.pyqtSignal(QtGui.QColor)
     backColorChanged = QtCore.pyqtSignal(QtGui.QColor)
 
-    cellsize = 18
-    selectedForeColor = ColorRect(QtGui.QColor(0, 0, 0, 255))
-    selectedBackColor = ColorRect(QtGui.QColor(0, 0, 0, 0))
-
-    fDragForegroundColor = False
-    dragColorRect = ColorRect(QtGui.QColor(0, 0, 0, 0))
 
     def __init__(self, parent=None):
         '''
         Constructor
         '''
         QtWidgets.QWidget.__init__(self, parent)
+
+        self.cellsize = 18
+        self.selectedForeColor = ColorRect(QtGui.QColor(0, 0, 0, 255))
+        self.selectedBackColor = ColorRect(QtGui.QColor(0, 0, 0, 0))
+
+        self.fDragForegroundColor = False
+        self.dragColorRect = ColorRect(QtGui.QColor(0, 0, 0, 0))
 
         self.palette = {
             0: [

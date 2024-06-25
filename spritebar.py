@@ -16,17 +16,17 @@ class SpriteBar(QtWidgets.QWidget):
 
     spriteChanged = QtCore.pyqtSignal()
 
-    list_sprites = []
-    list_sprites_names = []
-    nb_cells = 8
-    current_sprite = 0
-    cell_size = 40
-
     def __init__(self, parent=None):
         '''
         Constructor
         '''
         QtWidgets.QWidget.__init__(self, parent)
+
+        self.list_sprites = []
+        self.list_sprites_names = []
+        self.nb_cells = 8
+        self.current_sprite = 0
+        self.cell_size = 40
 
         for i in range(0, self.nb_cells):
             if (i == 0):
