@@ -1,16 +1,14 @@
 
 
 class RInt:
-    val=0
     def __init__(self, nv: int) -> None:
         self.val = nv
 
 class SelectCorner:
-    _x = RInt(0)
-    _y = RInt(0)
     
     def __init__(self) -> None:
-        pass
+        self._x = RInt(0)
+        self._y = RInt(0)
     
     @property
     def x(self):

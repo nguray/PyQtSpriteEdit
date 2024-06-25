@@ -3,21 +3,19 @@ from selectcorner import SelectCorner,RInt
 
 class SelectRect:
 
-    mode = 0
-    _left = RInt(0)
-    _top = RInt(0)
-    _right = RInt(0)
-    _bottom = RInt(0)
-    TopLeft = SelectCorner()
-    TopRight = SelectCorner()
-    BottomLeft = SelectCorner()
-    BottomRight = SelectCorner()
-    _left_bak = 0
-    _top_bak = 0
-    _right_bak = 0
-    _bottom_bak = 0
-
     def __init__(self) -> None:
+
+        self.mode = 0
+        self._left = RInt(0)
+        self._top = RInt(0)
+        self._right = RInt(0)
+        self._bottom = RInt(0)
+
+        self.TopLeft = SelectCorner()
+        self.TopRight = SelectCorner()
+        self.BottomLeft = SelectCorner()
+        self.BottomRight = SelectCorner()
+
         self.TopLeft._x = self._left
         self.TopLeft._y = self._top
         self.TopRight._x = self._right
@@ -26,6 +24,12 @@ class SelectRect:
         self.BottomLeft._y = self._bottom
         self.BottomRight._x = self._right
         self.BottomRight._y = self._bottom
+
+        self._left_bak = 0
+        self._top_bak = 0
+        self._right_bak = 0
+        self._bottom_bak = 0
+
 
     def setTopLeft(self,x: int,y: int):
         self.TopLeft.x = x
