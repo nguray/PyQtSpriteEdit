@@ -189,7 +189,7 @@ class MyWindow(QtWidgets.QMainWindow):
         d.show()
 
     def updateCursorPosDisplay(self, x, y):
-        self.statusBar().showMessage("cursor : ({0},{1})".format(x, y))
+        self.statusBar().showMessage(f"cursor : ({x},{y})")
         self.repaint()
 
     def spriteChanged(self):
@@ -408,7 +408,7 @@ class MyWindow(QtWidgets.QMainWindow):
         vbox.addLayout(self.hbox)
         vbox.addWidget(self.colorbar)
         vbox.setStretch(0, h)
-        vbox.setStretch(1, self.colorbar.cellsize*2+2)
+        vbox.setStretch(1, self.colorbar.cellSize*2+2)
 
         centralWidget = QtWidgets.QWidget(self)
         centralWidget.setLayout(vbox)

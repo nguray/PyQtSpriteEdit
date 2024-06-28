@@ -59,7 +59,7 @@ class MyColorBar(QtWidgets.QWidget):
         '''
         QtWidgets.QWidget.__init__(self, parent)
 
-        self.cellsize = 18
+        self.cellSize = 18
         self.selectedForeColor = ColorRect(QtGui.QColor(0, 0, 0, 255))
         self.selectedBackColor = ColorRect(QtGui.QColor(0, 0, 0, 0))
 
@@ -115,11 +115,11 @@ class MyColorBar(QtWidgets.QWidget):
 
     def drawPalette(self, qp):
         for lin in self.palette.items():
-            y = self.cellsize * lin[0]
+            y = self.cellSize * lin[0]
             for c,colorRect in enumerate(lin[1]):
-                x = self.cellsize * c + 2 * self.cellsize
-                colorRect.setRect(x + 1, y + 1, self.cellsize - 2,
-                                  self.cellsize - 2)
+                x = self.cellSize * c + 2 * self.cellSize
+                colorRect.setRect(x + 1, y + 1, self.cellSize - 2,
+                                  self.cellSize - 2)
                 colorRect.draw(qp)
 
     def mousePressEvent(self, mouseEvent):
@@ -130,8 +130,8 @@ class MyColorBar(QtWidgets.QWidget):
             if self.selectedForeColor.contains(x,y):
                 self.fDragForegroundColor = True
                 self.dragColorRect.color = self.selectedForeColor.color
-                offSet = self.cellsize // 2
-                self.dragColorRect.setRect(x-offSet,y-offSet,self.cellsize,self.cellsize)
+                offSet = self.cellSize // 2
+                self.dragColorRect.setRect(x-offSet,y-offSet,self.cellSize,self.cellSize)
                 self.repaint()
             else:
                 for lin in self.palette.items():
@@ -154,8 +154,8 @@ class MyColorBar(QtWidgets.QWidget):
             x = mousePos.x()
             y = mousePos.y()
             if self.fDragForegroundColor:
-                offSet = self.cellsize // 2
-                self.dragColorRect.setRect(x-offSet,y-offSet,self.cellsize,self.cellsize)
+                offSet = self.cellSize // 2
+                self.dragColorRect.setRect(x-offSet,y-offSet,self.cellSize,self.cellSize)
                 self.repaint()
 
     def mouseReleaseEvent(self, mouseEvent):
@@ -219,11 +219,11 @@ class MyColorBar(QtWidgets.QWidget):
 
         self.drawPalette(qp)
 
-        s = 2 * self.cellsize - 2
+        s = 2 * self.cellSize - 2
         self.selectedBackColor.setRect(1, 1, s, s)
         self.selectedBackColor.draw(qp)
 
-        s = int(1.5 * self.cellsize - 2)
+        s = int(1.5 * self.cellSize - 2)
         self.selectedForeColor.setRect(1, 1, s, s)
         self.selectedForeColor.draw(qp)
 
