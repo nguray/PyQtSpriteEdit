@@ -9,17 +9,17 @@ from selectrect import SelectRect
 class RectangleMode:
 
     select_rect = SelectRect()
-    start_x = 0
-    start_y = 0
-    hit_corner = None
-    select_rect_left_bak   = 0
-    select_rect_top_bak    = 0
-    select_rect_right_bak  = 0
-    select_rect_bottom_bak = 0
-
 
     def __init__(self, outer):
         self.outer = outer
+        self.f_move = False
+        self.hit_corner = None
+        self.start_x = 0
+        self.start_y = 0
+        self.select_rect_left_bak   = 0
+        self.select_rect_top_bak    = 0
+        self.select_rect_right_bak  = 0
+        self.select_rect_bottom_bak = 0
 
     def resetMode(self):
         self.initDrawRect()
@@ -55,6 +55,8 @@ class RectangleMode:
             qp.fillRect(wx1,wy1,wx2-wx1,wy2-wy1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
 
     def drawSelectHandles(self, qp):
+        if self.f_move:
+            return
         x1,y1,x2,y2 = self.select_rect.getNormalize()
         #print("x1 : %2d, x2 : %2d" % (x1, x2))
         if x1!=x2 and y1!=y2:
@@ -112,8 +114,11 @@ class RectangleMode:
                 if not self.select_rect.isEmpty():
                     self.select_rect.normalize()
                     self.select_rect.mode = 1
+                    self.outer.repaint()
             case 1:
+                self.f_move = False
                 self.hit_corner = None
+                self.outer.repaint()
             case _:
                 self.select_rect.mode = 0
 
@@ -193,6 +198,7 @@ class RectangleMode:
                                 qp.drawRect(self.select_rect.left, self.select_rect.top,
                                             self.select_rect.width()-1,
                                             self.select_rect.height()-1)
+                                self.f_move = True
                                 self.outer.repaint()
                             else:
                                # Restore position 

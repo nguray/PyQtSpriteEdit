@@ -12,16 +12,18 @@ class SelectMode:
     hit_corner = None
 
     select_rect = SelectRect()
-    start_x = 0
-    start_y = 0
-    f_move = False
-    select_rect_left_bak   = 0
-    select_rect_top_bak    = 0
-    select_rect_right_bak  = 0
-    select_rect_bottom_bak = 0
 
     def __init__(self, outer):
         self.outer = outer
+        self.f_move = False
+        self.hit_corner = None
+        self.start_x = 0
+        self.start_y = 0
+        self.select_rect_left_bak   = 0
+        self.select_rect_top_bak    = 0
+        self.select_rect_right_bak  = 0
+        self.select_rect_bottom_bak = 0
+
         # self.select_rect.setTopLeft(10,20)
         # x, y = self.select_rect.getBottomLeft()
         # pass
@@ -49,6 +51,8 @@ class SelectMode:
             qp.fillRect(wx1,wy1,wx2-wx1,wy2-wy1,QtGui.QBrush(QtGui.QColor(0,0,255,25)))
 
     def drawSelectHandles(self, qp):
+        if self.f_move:
+            return
         x1,y1,x2,y2 = self.select_rect.getNormalize()
         #print("x1 : %2d, x2 : %2d" % (x1, x2))
         if x1!=x2 and y1!=y2:
@@ -119,8 +123,11 @@ class SelectMode:
                 if not self.select_rect.isEmpty():
                     self.select_rect.normalize()
                     self.select_rect.mode = 1
+                    self.outer.repaint()
             case 1:
                 self.hit_corner = None
+                self.f_move = False
+                self.outer.repaint()
             case _:
                 self.hit_corner = None
                 self.f_move = False
@@ -151,6 +158,7 @@ class SelectMode:
                         if dx!=0 or dy!=0:
                             self.select_rect.restore()
                             self.select_rect.offset(dx,dy)
+                            self.f_move = True
                     self.outer.repaint()
                 case _:
                     if self.f_move:

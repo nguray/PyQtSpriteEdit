@@ -283,8 +283,8 @@ class MyEditArea(QtWidgets.QWidget):
             qp.begin(self.sprite_cpy)
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
-                             self.CurEditModeObj.select_rect.top.val, w, h))
+                QtCore.QRect(self.CurEditModeObj.select_rect.left,
+                             self.CurEditModeObj.select_rect.top, w, h))
             qp.end()
             # Effacer la zone
             qp1 = QtGui.QPainter()
@@ -292,8 +292,8 @@ class MyEditArea(QtWidgets.QWidget):
             r, g, b, a = self.backgroundColor.getRgb()
             qp1.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
             qp1.fillRect(
-                QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
-                             self.CurEditModeObj.select_rect.top.val, w, h),
+                QtCore.QRect(self.CurEditModeObj.select_rect.left,
+                             self.CurEditModeObj.select_rect.top, w, h),
                 QtGui.QColor(r, g, b, a))
             qp1.end()
             self.CurEditModeObj.resetMode()
@@ -312,8 +312,8 @@ class MyEditArea(QtWidgets.QWidget):
             qp.begin(self.sprite_cpy)
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.CurEditModeObj.select_rect.left.val,
-                             self.CurEditModeObj.select_rect.top.val, w, h))
+                QtCore.QRect(self.CurEditModeObj.select_rect.left,
+                             self.CurEditModeObj.select_rect.top, w, h))
             qp.end()
             self.CurEditModeObj.initSelectRect()
             self.repaint()
@@ -492,7 +492,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.drawSpritePixels(qp)
 
         if self.CurEditModeObj.select_rect is not None:
-            self.CurEditModeObj.drawSelectHandles(qp)
+            if (self.CurEditModeObj.select_rect.mode==1):
+                self.CurEditModeObj.drawSelectHandles(qp)
 
         # if (self.nb_points>0):
         #    self.drawLivePolyLine(qp)
