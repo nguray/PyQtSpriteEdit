@@ -278,12 +278,12 @@ class MyWindow(QtWidgets.QMainWindow):
 
         rotate90ClockAction = QtWidgets.QAction(
             QtGui.QIcon(':res/rotate_90_clockwise.png'),
-            u'Rotate 90° clockwise', self)
+            'Rotate 90° clockwise', self)
         rotate90ClockAction.triggered.connect(self.rotate90ClockImage)
 
         rotate90AntiClockAction = QtWidgets.QAction(
             QtGui.QIcon(':res/rotate_90_anticlockwise.png'),
-            u'Rotate 90° counter-clockwise', self)
+            'Rotate 90° counter-clockwise', self)
         rotate90AntiClockAction.triggered.connect(self.rotate90AntiClockImage)
 
         aboutAction = QtWidgets.QAction(QtGui.QIcon(':res/help-browser.png'), 'About',
