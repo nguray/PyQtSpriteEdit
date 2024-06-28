@@ -20,9 +20,9 @@ from editmode import EditMode
 # MSYS2 Shell : pyrcc5 -o resources.py qtspriteedit.qrc
 import  resources
 
-class myAbout(QtWidgets.QDialog):
+class MyAbout(QtWidgets.QDialog):
     def __init__(self, parent=None):
-        super(myAbout, self).__init__(parent)
+        super(MyAbout, self).__init__(parent)
         # Create widgets
         self.l1 = QtWidgets.QLabel("PyQtSpriteEdit version 0.2")
         self.l1.setAlignment(QtCore.Qt.AlignCenter)
@@ -47,6 +47,7 @@ class myAbout(QtWidgets.QDialog):
 
 
 class MyWindow(QtWidgets.QMainWindow):
+    ''' Application window  '''
 
     filename = ""
     spriteBarX = 16
@@ -56,8 +57,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.initUI()
 
     def newFile(self):
-        """
-        """
+        """ Create new sprite image """
         self.filename = ""
         self.editarea.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
         self.repaint()
@@ -91,6 +91,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.repaint()
 
     def openFile(self):
+        """ Load a sprite image """
         inputfilename, _ = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', ".",
                                                        "Images (*.png)")
         if inputfilename:
@@ -185,7 +186,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.editarea.doRotate90AntiClock()
 
     def aboutMe(self):
-        d = myAbout(self)
+        d = MyAbout(self)
         d.show()
 
     def updateCursorPosDisplay(self, x, y):
@@ -303,21 +304,21 @@ class MyWindow(QtWidgets.QMainWindow):
         self.fileMenu.addAction(saveAsAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(exitAction)
-        self.EditMenu = menubar.addMenu('&Edit')
-        self.EditMenu.addAction(undoAction)
-        self.EditMenu.addSeparator()
-        self.EditMenu.addAction(cutAction)
-        self.EditMenu.addAction(copyAction)
-        self.EditMenu.addAction(pasteAction)
+        self.editMenu = menubar.addMenu('&Edit')
+        self.editMenu.addAction(undoAction)
+        self.editMenu.addSeparator()
+        self.editMenu.addAction(cutAction)
+        self.editMenu.addAction(copyAction)
+        self.editMenu.addAction(pasteAction)
 
-        self.ImageMenu = menubar.addMenu('Image')
-        self.ImageMenu.addAction(mirrorHorizontalAction)
-        self.ImageMenu.addAction(mirrorVerticalAction)
-        self.ImageMenu.addAction(rotate90ClockAction)
-        self.ImageMenu.addAction(rotate90AntiClockAction)
+        self.imageMenu = menubar.addMenu('Image')
+        self.imageMenu.addAction(mirrorHorizontalAction)
+        self.imageMenu.addAction(mirrorVerticalAction)
+        self.imageMenu.addAction(rotate90ClockAction)
+        self.imageMenu.addAction(rotate90AntiClockAction)
 
-        self.AboutMenu = menubar.addMenu('?')
-        self.AboutMenu.addAction(aboutAction)
+        self.aboutMenu = menubar.addMenu('?')
+        self.aboutMenu.addAction(aboutAction)
 
         # ------------------------------------------------
         # Toolbar Actions
