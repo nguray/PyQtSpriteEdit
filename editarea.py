@@ -38,8 +38,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.x = -1
         self.y = -1
 
-        self.edit_mode = 0
-        self.prev_edit_mode = 0
+        self.editMode = 0
+        self.prevEditMode = 0
 
         self.foregroundColor = QtGui.QColor(0, 0, 255, 255)
         self.backgroundColor = QtGui.QColor(0, 0, 0, 0)
@@ -47,11 +47,11 @@ class MyEditArea(QtWidgets.QWidget):
         self.pixSize = 12
         self.nbRowPix = 32
         self.nbColumnPix = 32
-        self.sprite_cpy = None
+        self.sprite = None
+        self.spriteCopy = None
         self.initSprite(32,32)
 
-        self.CurEditModeObj = None
-        
+        self.curEditModeObj = None
 
         self.myPickColorCursor = QtGui.QCursor(QtGui.QPixmap(":res/PickColor.png"),6,23)
         # ----------------------------------------------------------------------
@@ -73,7 +73,6 @@ class MyEditArea(QtWidgets.QWidget):
             myCursorSelect, myCursorPencil, myCursorRubber,
             myCursorLine, myCursorRectangle, myCursorEllipse, myCursorFill
         ]
-
 
         selectRectModeAction = QtWidgets.QAction(QtGui.QIcon('SelectRect.png'), 'Select',
                                        self)
@@ -110,7 +109,7 @@ class MyEditArea(QtWidgets.QWidget):
             EditMode.FILL : FillMode(self)
         }
 
-        self.CurEditModeObj = self.DictModes[EditMode.SELECT]
+        self.curEditModeObj = self.DictModes[EditMode.SELECT]
 
         self.show()
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
@@ -135,7 +134,6 @@ class MyEditArea(QtWidgets.QWidget):
 
         # # Afficher le context menu
         # action = menu.exec_(self.mapToGlobal(event.pos()))
-        
 
         # # Traiter le choix de l'utilisateur
         # for m, a in enumerate(self.editActions):
@@ -143,24 +141,22 @@ class MyEditArea(QtWidgets.QWidget):
         #         self.setEditMode(m)
 
     def resetSelect(self):
-        """
-        """
-        self.CurEditModeObj.resetMode()
+        """ -- """
+        self.curEditModeObj.resetMode()
         # --
         self.repaint()
 
-    def setEditMode(self, m):        
-        """
-        """
-        if self.edit_mode != m:
-            self.prev_edit_mode = self.edit_mode
-            self.edit_mode = m
+    def setEditMode(self, m):
+        """ -- """
+        if self.editMode != m:
+            self.prevEditMode = self.editMode
+            self.editMode = m
 
             # Changer la forme du curseur de la souris
-            #self.setCursor(self.editCursors[self.edit_mode])
+            #self.setCursor(self.editCursors[self.editMode])
 
-            self.CurEditModeObj = self.DictModes[m]
-            self.CurEditModeObj.resetMode()
+            self.curEditModeObj = self.DictModes[m]
+            self.curEditModeObj.resetMode()
 
             # --
             self.repaint()
@@ -170,7 +166,6 @@ class MyEditArea(QtWidgets.QWidget):
 
     def changeBackColor(self, c):
         self.backgroundColor = c
-        
 
     def computeSize(self):
         w = self.nbColumnPix * self.pixSize + 1
@@ -212,7 +207,7 @@ class MyEditArea(QtWidgets.QWidget):
                 qp.setBrush(color)
                 qp.drawRect(px, py, self.pixSize - 2, self.pixSize - 2)
 
-    def InSprite(self, x, y):
+    def inSprite(self, x, y):
         if ((x >= 0) and (x < self.nbColumnPix) and (y >= 0)
                 and (y < self.nbRowPix)):
             return True
@@ -220,8 +215,7 @@ class MyEditArea(QtWidgets.QWidget):
             return False
 
     def backupSprite(self):
-        """
-        """
+        """ Make a backup of the sprite """
         self.sprite_bak.fill(QtGui.qRgba(0, 0, 0, 0))
         qp = QtGui.QPainter()
         qp.begin(self.sprite_bak)
@@ -231,8 +225,7 @@ class MyEditArea(QtWidgets.QWidget):
         qp.end()
 
     def restoreSprite(self):
-        """
-        """
+        """ Restore backup sprite """
         self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
         qp = QtGui.QPainter()
         qp.begin(self.sprite)
@@ -243,28 +236,26 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doUndo(self):
-        """
-        """  
+        """ -- """ 
         self.restoreSprite()
-        self.CurEditModeObj.resetMode()
+        self.curEditModeObj.resetMode()
 
     def doCutRect(self):
-        """
-        """
-        if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
+        """ Manage cut select """
+        if self.curEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
-        if not self.CurEditModeObj.select_rect.isEmpty():
-            w = self.CurEditModeObj.select_rect.width()
-            h = self.CurEditModeObj.select_rect.height()
-            self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)    
-            self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
+        if not self.curEditModeObj.select_rect.isEmpty():
+            w = self.curEditModeObj.select_rect.width()
+            h = self.curEditModeObj.select_rect.height()
+            self.spriteCopy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)    
+            self.spriteCopy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             # Faire une copie de zone
             qp.begin(self.sprite_cpy)
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.CurEditModeObj.select_rect.left,
-                             self.CurEditModeObj.select_rect.top, w, h))
+                QtCore.QRect(self.curEditModeObj.select_rect.left,
+                             self.curEditModeObj.select_rect.top, w, h))
             qp.end()
             # Effacer la zone
             qp1 = QtGui.QPainter()
@@ -272,59 +263,58 @@ class MyEditArea(QtWidgets.QWidget):
             r, g, b, a = self.backgroundColor.getRgb()
             qp1.setCompositionMode(QtGui.QPainter.CompositionMode_Source)
             qp1.fillRect(
-                QtCore.QRect(self.CurEditModeObj.select_rect.left,
-                             self.CurEditModeObj.select_rect.top, w, h),
+                QtCore.QRect(self.curEditModeObj.select_rect.left,
+                             self.curEditModeObj.select_rect.top, w, h),
                 QtGui.QColor(r, g, b, a))
             qp1.end()
-            self.CurEditModeObj.resetMode()
+            self.curEditModeObj.resetMode()
 
     def doCopyRect(self):
-        """
-        """
-        if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
+        """ Manage copy selected """
+        if self.curEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
-        if not self.CurEditModeObj.select_rect.isEmpty():
-            w = self.CurEditModeObj.select_rect.width()
-            h = self.CurEditModeObj.select_rect.height()
-            self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
-            self.sprite_cpy.fill(QtGui.qRgba(0, 0, 0, 0))
+        if not self.curEditModeObj.select_rect.isEmpty():
+            w = self.curEditModeObj.select_rect.width()
+            h = self.curEditModeObj.select_rect.height()
+            self.spriteCopy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
+            self.spriteCopy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
-            qp.begin(self.sprite_cpy)
+            qp.begin(self.spriteCopy)
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
-                QtCore.QRect(self.CurEditModeObj.select_rect.left,
-                             self.CurEditModeObj.select_rect.top, w, h))
+                QtCore.QRect(self.curEditModeObj.select_rect.left,
+                             self.curEditModeObj.select_rect.top, w, h))
             qp.end()
-            self.CurEditModeObj.initSelectRect()
+            self.curEditModeObj.initSelectRect()
             self.repaint()
 
     def doPasteRect(self):
-        if self.CurEditModeObj is not self.DictModes[EditMode.SELECT]:
+        """ Manage paste copy """
+        if self.curEditModeObj is not self.DictModes[EditMode.SELECT]:
             return
-        w = self.sprite_cpy.width()
-        h = self.sprite_cpy.height()
+        w = self.spriteCopy.width()
+        h = self.spriteCopy.height()
         if w and h:
             self.backupSprite()
-            self.CurEditModeObj.select_rect.setTopLeft(0,0)
-            self.CurEditModeObj.select_rect.setBottomRight(w-1,h-1)
-            self.CurEditModeObj.select_rect.mode = 2
+            self.curEditModeObj.select_rect.setTopLeft(0,0)
+            self.curEditModeObj.select_rect.setBottomRight(w-1,h-1)
+            self.curEditModeObj.select_rect.mode = 2
             qp = QtGui.QPainter()
             qp.begin(self.sprite)
-            qp.drawImage(QtCore.QRect(0, 0, w, h), self.sprite_cpy,
+            qp.drawImage(QtCore.QRect(0, 0, w, h), self.spriteCopy,
                          QtCore.QRect(0, 0, w, h))
             qp.end()
         
 
     def floodFill(self, x0, y0, iTargetColor, iNewColor):
-        """
-        """
+        """ Do flood fill """
         c = self.sprite.pixel(x0, y0)
         if c == iNewColor or c != iTargetColor:
             return
         self.sprite.setPixel(x0, y0, iNewColor)
-        if (y0 > 0):
+        if y0 > 0:
             self.floodFill(x0, y0 - 1, iTargetColor, iNewColor)
-        if (y0 < self.nbColumnPix - 1):
+        if y0 < self.nbColumnPix - 1:
             self.floodFill(x0, y0 + 1, iTargetColor, iNewColor)
         if x0 < self.nbColumnPix - 1:
             self.floodFill(x0 + 1, y0, iTargetColor, iNewColor)
@@ -332,41 +322,36 @@ class MyEditArea(QtWidgets.QWidget):
             self.floodFill(x0 - 1, y0, iTargetColor, iNewColor)
 
     def mousePressEvent(self, mouseEvent):
-        """
-        """
+        """ Manage mouse button press """
         mousePos = mouseEvent.pos()
         self.x, self.y = self.mouseToPixCoord(mousePos.x(), mousePos.y())
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         if mouseEvent.buttons() == QtCore.Qt.LeftButton and modifiers & QtCore.Qt.ShiftModifier:
-            if self.InSprite(self.x, self.y):
+            if self.inSprite(self.x, self.y):
                 c = self.sprite.pixel(self.x, self.y)
                 self.foregroundColor.setRgba(c)
                 self.pipetForeColor.emit(self.foregroundColor)
         else:
             # --
-            self.CurEditModeObj.mousePressEvent(mouseEvent)
+            self.curEditModeObj.mousePressEvent(mouseEvent)
             self.cursorPosChanged.emit(self.x, self.y)
 
     def mouseReleaseEvent(self, mouseEvent):
-        """
-        """
-        self.CurEditModeObj.mouseReleaseEvent(mouseEvent)
+        """ Manage  mouse button release """
+        self.curEditModeObj.mouseReleaseEvent(mouseEvent)
 
     def mouseMoveEvent(self, mouseEvent):
-        """
-        """
+        """ Manage mouse move """
         mousePos = mouseEvent.pos()
         self.x, self.y = self.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
-        self.CurEditModeObj.mouseMoveEvent(mouseEvent)
+        self.curEditModeObj.mouseMoveEvent(mouseEvent)
         self.cursorPosChanged.emit(self.x, self.y)
 
     def doMirrorHorizontal(self):
-
-        """
-        """
+        """ Do sprite horizontal mirror """
         #
-        self.CurEditModeObj.resetMode()
+        self.curEditModeObj.resetMode()
         self.backupSprite()
         #
         h = int(self.nbColumnPix / 2)
@@ -381,11 +366,9 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doMirrorVertical(self):
-        """        }
-
-        """
+        """  Do sprite vertical mirror """
         #
-        self.CurEditModeObj.resetMode()
+        self.curEditModeObj.resetMode()
         self.backupSprite()
         #
         h = int(self.nbRowPix / 2)
@@ -397,14 +380,12 @@ class MyEditArea(QtWidgets.QWidget):
                 self.sprite.setPixel(x, i, c1)
                 self.sprite.setPixel(x, w - i, c0)
         #
-
         self.repaint()
 
     def doRotate90Clock(self):
-        """
-        """
+        """ Clockwise rotation """
         #
-        self.CurEditModeObj.resetMode()
+        self.curEditModeObj.resetMode()
         self.backupSprite()
         #
         for y in range(0, self.nbColumnPix):
@@ -416,10 +397,9 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doRotate90AntiClock(self):
-        """
-        """
+        """ Anticlockwise rotation """
         #
-        self.CurEditModeObj.resetMode()
+        self.curEditModeObj.resetMode()
         self.backupSprite()
         #
         for y in range(0, self.nbColumnPix):
@@ -430,38 +410,32 @@ class MyEditArea(QtWidgets.QWidget):
         #
         self.repaint()
 
-
     def setEditSprite(self, sprite):
-        """
-        """
+        """ Define edit sprite """
         self.sprite = sprite
         self.repaint()
 
     def keyPressEvent(self, e):
-        """
-        """
+        """ Process KeyPress """
         if e.key() == QtCore.Qt.Key_Space:
-            self.setEditMode(self.prev_edit_mode)
+            self.setEditMode(self.prevEditMode)
         elif e.key()==QtCore.Qt.Key_Shift:
             self.setCursor(self.myPickColorCursor)
         else:
-            self.CurEditModeObj.keyPressEvent(e)
+            self.curEditModeObj.keyPressEvent(e)
 
     def keyReleaseEvent(self,e):
-        """
-        """
+        """  Process KeyRelease"""
         if e.key()==QtCore.Qt.Key_Shift:
             self.setCursor(QtCore.Qt.ArrowCursor)
 
 
     def paintEvent(self, e):
-        """
-        """
+        """ Do paint job """
 
         qp = QtGui.QPainter()
 
         qp.begin(self)
-
 
         size = self.size()
         w = size.width()
@@ -471,52 +445,39 @@ class MyEditArea(QtWidgets.QWidget):
             if self.nbRowPix>self.nbColumnPix:
                 self.pixSize = int(h/self.nbRowPix)
             else:
-               self.pixSize = int(h/self.nbColumnPix)
+                self.pixSize = int(h/self.nbColumnPix)
         else:
             if self.nbRowPix>self.nbColumnPix:
                 self.pixSize = int(w/self.nbRowPix)
             else:
                 self.pixSize = int(w/self.nbColumnPix)
-            
 
         self.drawGrid(qp)
 
 
         # Draw Select rectangle
-        if self.CurEditModeObj.select_rect is not None:
-            self.CurEditModeObj.drawSelectBackground(qp)
+        if self.curEditModeObj.select_rect is not None:
+            self.curEditModeObj.drawSelectBackground(qp)
 
         #
         self.drawSpritePixels(qp)
 
-        if self.CurEditModeObj.select_rect is not None:
-            if (self.CurEditModeObj.select_rect.mode==1):
-                self.CurEditModeObj.drawSelectHandles(qp)
-
-        # if (self.nb_points>0):
-        #    self.drawLivePolyLine(qp)
-        #self.DrawPolyLineModeObj.drawLivePolyLine(qp)
-
-        # color = self.forewardColor
-        # if (self.x>=0) and (self.y>=0):
-        #    qp.setPen(color)
-        #    qp.setBrush(color)
-        #    mx,my = self.pixToMouseCoord(self.x,self.y)
-        #    qp.drawRect(mx,my,self.pixSize,self.pixSize)
+        if self.curEditModeObj.select_rect is not None:
+            if self.curEditModeObj.select_rect.mode==1:
+                self.curEditModeObj.drawSelectHandles(qp)
 
         qp.end()
 
+
     def dragEnterEvent(self, e):
-        """
-        """
+        """ Manage drag """
         if e.mimeData().hasUrls():
             e.accept()
         else:
             e.ignore()
 
     def dropEvent(self, event):
-        """
-        """
+        """ Manage Drop """
         if event.mimeData().hasUrls():
             event.setDropAction(QtCore.Qt.CopyAction)
             event.accept()
@@ -526,7 +487,7 @@ class MyEditArea(QtWidgets.QWidget):
                     path = path[1:]
                 if os.path.isfile(path):
                     print(path)
-                    if (path.upper().endswith(".PNG")):
+                    if path.upper().endswith(".PNG"):
                         self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
                         img = QtGui.QImage()
                         img.load(path, "PNG")
@@ -534,14 +495,8 @@ class MyEditArea(QtWidgets.QWidget):
                         qp.begin(self.sprite)
                         wSrc = img.width()
                         hSrc = img.height()
-                        if (wSrc <= 32):
-                            wDes = wSrc
-                        else:
-                            wDes = 32
-                        if (hSrc < 32):
-                            hDes = hSrc
-                        else:
-                            hDes = 32
+                        wDes = wSrc if wSrc < 32 else 32
+                        hDes = hSrc if hSrc < 32 else 32
                         qp.drawImage(QtCore.QRect(0, 0, wDes, hDes), img,
                                      QtCore.QRect(0, 0, wSrc, hSrc))
                         qp.end()

@@ -22,7 +22,7 @@ import  resources
 
 class MyAbout(QtWidgets.QDialog):
     def __init__(self, parent=None):
-        super(MyAbout, self).__init__(parent)
+        super().__init__(parent)
         # Create widgets
         self.l1 = QtWidgets.QLabel("PyQtSpriteEdit version 0.2")
         self.l1.setAlignment(QtCore.Qt.AlignCenter)
