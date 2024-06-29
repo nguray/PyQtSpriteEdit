@@ -119,6 +119,14 @@ class MyEditArea(QtWidgets.QWidget):
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.setAcceptDrops(True)
 
+    def initSprite(self,w,h):
+        self.pixSize = 12
+        self.nbRowPix = h
+        self.nbColumnPix = w
+        self.sprite = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
+        self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
+        self.sprite_bak = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
+        self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
 
     def init32Sprite(self):
         self.pixSize = 12

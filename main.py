@@ -45,6 +45,89 @@ class MyAbout(QtWidgets.QDialog):
         # Add button signal to greetings slot
         self.button.clicked.connect(self.accept)
 
+class NewSpriteDlg(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setMinimumWidth(256)
+        self.setMinimumHeight(156)
+        self.imageWidth = 0
+        self.imageHeight = 0
+
+        self.buttonBox = QtWidgets.QDialogButtonBox()
+        self.buttonBox.addButton("Ok", QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole)
+        self.buttonBox.addButton("Cancel", QtWidgets.QDialogButtonBox.ButtonRole.RejectRole)
+        self.buttonBox.accepted.connect(self.onAccept)
+        self.buttonBox.rejected.connect(self.onCancel)
+
+        fm = self.fontMetrics()
+        rect1 = fm.boundingRect('Width')
+        rect2 = fm.boundingRect('Height')
+
+        labelWidth = rect1.width() if rect1.width()>rect2.width() else rect1.width()
+
+        imageFrame = QtWidgets.QGroupBox('Image')
+        #imageFrame.setStyleSheet("QGroupBox::title {subcontrol-origin: margin;subcontrol-position: top left;padding: 5 5px;font-size: 18px;font-weight: bold;}"
+        imageFrame.setStyleSheet(
+                'QGroupBox {'
+                 'border: 1px solid rgb(120,120,120);'
+                 'border-radius: 4px;'
+                 'margin-top: 6px;}'
+                 'QGroupBox:title {'
+                 'subcontrol-origin: margin;'
+                 'left: 7px;'
+                 'padding: -10px 5px 0px 5px;}')
+        
+    
+        vBoxLayout = QtWidgets.QVBoxLayout()
+        vBoxLayout1 = QtWidgets.QVBoxLayout()
+
+
+        hBoxLayout1 = QtWidgets.QHBoxLayout()
+        widthLabel = QtWidgets.QLabel('Width')
+        widthLabel.setMinimumWidth(labelWidth)
+        self.widthEdit = QtWidgets.QLineEdit('32')
+        self.widthEdit.setMaxLength(4)
+        self.widthEdit.setMaximumWidth(50)
+        hBoxLayout1.addStretch()
+        hBoxLayout1.addWidget(widthLabel,0,QtCore.Qt.AlignmentFlag.AlignLeft)
+        hBoxLayout1.addWidget(self.widthEdit,0,QtCore.Qt.AlignmentFlag.AlignRight)
+        hBoxLayout1.addStretch()
+
+        hBoxLayout2 = QtWidgets.QHBoxLayout()
+        heightLabel = QtWidgets.QLabel('Height')
+        heightLabel.setMinimumWidth(labelWidth)
+        self.heightEdit = QtWidgets.QLineEdit('32')
+        self.heightEdit.setMaxLength(4)
+        self.heightEdit.setMaximumWidth(50)
+        hBoxLayout2.addStretch()
+        hBoxLayout2.addWidget(heightLabel,0,QtCore.Qt.AlignmentFlag.AlignLeft)
+        hBoxLayout2.addWidget(self.heightEdit,0,QtCore.Qt.AlignmentFlag.AlignRight)
+        hBoxLayout2.addStretch()
+
+        vBoxLayout1.addStretch()
+        vBoxLayout1.addLayout(hBoxLayout1)
+        vBoxLayout1.addLayout(hBoxLayout2)
+        vBoxLayout1.addStretch()
+
+        imageFrame.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft or QtCore.Qt.AlignmentFlag.AlignVCenter)
+        imageFrame.setLayout(vBoxLayout1)
+
+        vBoxLayout.addWidget(imageFrame)
+        vBoxLayout.addWidget(self.buttonBox)
+
+        self.setLayout(vBoxLayout)
+        self.setWindowTitle('New Sprite')
+
+    def onAccept(self):
+        self.imageWidth = int(self.widthEdit.text())
+        self.imageHeight = int(self.heightEdit.text())
+        self.accept()
+
+    def onCancel(self):
+        self.imageWidth = 0
+        self.imageHeight = 0
+        self.reject()
+
 
 class MyWindow(QtWidgets.QMainWindow):
     ''' Application window  '''
@@ -59,8 +142,16 @@ class MyWindow(QtWidgets.QMainWindow):
     def newFile(self):
         """ Create new sprite image """
         self.filename = ""
-        self.editarea.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
-        self.repaint()
+        d = NewSpriteDlg(self)
+        d.setModal(True)
+        if d.exec_():
+            print(f'{d.imageWidth},{d.imageHeight}')
+            self.editarea.initSprite(d.imageWidth,d.imageHeight)
+            self.editarea.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
+            w, _ = self.editarea.computeSize()
+            self.spriteBarX = w + 16
+            self.hbox.setStretch(1, w+4)
+            self.repaint()
 
     def newFile16(self):
         """
@@ -206,19 +297,10 @@ class MyWindow(QtWidgets.QMainWindow):
         # Menu Actions
 
         # File Menu Actions
-        #newAction = QAction(QtGui.QIcon('icons/document-open.png'), 'New', self)
-        newAction = QtWidgets.QAction('New', self)
-        #newAction.setIcon(QtGui.QIcon('application-exit-symbolic.svg'))
+        newAction = QtWidgets.QAction(QtGui.QIcon(':res/document-new.png'), 'New', self)
         newAction.setShortcut('Ctrl+N')
         newAction.setStatusTip('Create new file')
-        # newAction.triggered.connect(self.newFile)
-
-        newAction16 = QtWidgets.QAction('16 x 16', self)
-        newAction16.triggered.connect(self.newFile16)
-        newAction32 = QtWidgets.QAction('32 x 32', self)
-        newAction32.triggered.connect(self.newFile32)
-        newAction64 = QtWidgets.QAction('64 x 64', self)
-        newAction64.triggered.connect(self.newFile64)
+        newAction.triggered.connect(self.newFile)
 
         openAction = QtWidgets.QAction(QtGui.QIcon(':res/document-open.png'), 'Open',
                              self)
@@ -292,12 +374,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
         menubar = self.menuBar()
         self.fileMenu = menubar.addMenu('&File')
-        self.subNewMenu = QtWidgets.QMenu('New')
-        self.subNewMenu.setIcon(QtGui.QIcon(':res/document-new.png'))
-        self.subNewMenu.addAction(newAction16)
-        self.subNewMenu.addAction(newAction32)
-        self.subNewMenu.addAction(newAction64)
-        self.fileMenu.addMenu(self.subNewMenu)
+        self.fileMenu.addAction(newAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(openAction)
         self.fileMenu.addAction(saveAction)
