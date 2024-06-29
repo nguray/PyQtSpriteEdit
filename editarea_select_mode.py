@@ -2,7 +2,6 @@
 from typing import Any
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-from rect import Rect
 from selectcorner import SelectCorner
 from selectrect import SelectRect
 
@@ -65,7 +64,7 @@ class SelectMode:
             qp.fillRect(wx2-s,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))    
             qp.fillRect(wx1,wy2-s,s,s,QtGui.QBrush(QtGui.QColor(0,0,200,128)))            
 
-    def hitCorner(self,x,y):
+    def hitCorner(self,x,y) -> SelectCorner:
         l,t,r,b = self.select_rect.getNormalize()
         if (x==l) and (y==t):
             return self.select_rect.TopLeft
@@ -75,8 +74,7 @@ class SelectMode:
             return self.select_rect.BottomRight
         elif (x==l) and (y==b):
             return self.select_rect.BottomLeft
-        else:
-            return None
+        return None
 
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()

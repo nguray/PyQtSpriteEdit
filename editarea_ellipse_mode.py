@@ -1,7 +1,6 @@
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtCore
 
-from rect import Rect
 from selectcorner import SelectCorner
 from selectrect import SelectRect
 
@@ -30,7 +29,7 @@ class EllipseMode:
         self.select_rect.empty()
         self.select_rect.mode = 0
 
-    def hitCorner(self,x,y):
+    def hitCorner(self,x,y) -> SelectCorner:
         l,t,r,b = self.select_rect.getNormalize()
         if (x==l) and (y==t):
             return self.select_rect.TopLeft

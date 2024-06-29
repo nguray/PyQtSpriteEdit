@@ -16,7 +16,6 @@ class PolyLineMode:
     selected_point = None
     select_rect = None
 
-
     def __init__(self, outer):
         self.outer = outer
 
@@ -57,9 +56,9 @@ class PolyLineMode:
 
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
+        if self.outer.InSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if modifiers & QtCore.Qt.ShiftModifier:
                     pass
@@ -67,20 +66,19 @@ class PolyLineMode:
                     if self.nb_points == 0:
                         # Pour le 1er point
                         self.outer.backupSprite()
-                        pt = _Point(self.x, self.y)
+                        pt = _Point(x, y)
                         self.list_points.append(pt)
                         self.nb_points += 1
                         self.outer.sprite.setPixel(
-                            self.x, self.y, self.outer.foregroundColor.rgba())
+                            x, y, self.outer.foregroundColor.rgba())
                         self.selected_point = pt
                     else:
                         # Pour les points suivants
-                        self.selected_point = self.hitPolylinePoints(
-                            self.x, self.y)
+                        self.selected_point = self.hitPolylinePoints(x, y)
                         if (self.selected_point is None):
                             pt = self.list_points[self.nb_points - 1]
-                            if (pt.x != self.x) or (pt.y != self.y):
-                                pt = _Point(self.x, self.y)
+                            if (pt.x != x) or (pt.y != y):
+                                pt = _Point(x, y)
                                 self.list_points.append(pt)
                                 self.nb_points += 1
                                 # ReDraw Polyline
@@ -95,20 +93,19 @@ class PolyLineMode:
 
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
+        if self.outer.InSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if self.selected_point is not None:
-                    if (self.selected_point.x !=
-                            self.x) or (self.selected_point.y != self.y):
+                    if (self.selected_point.x !=x) or (self.selected_point.y != y):
                         if modifiers == QtCore.Qt.ControlModifier:
-                            dx = self.x - self.selected_point.x
-                            dy = self.y - self.selected_point.y
+                            dx = x - self.selected_point.x
+                            dy = y - self.selected_point.y
                             self.translatePolyline(dx, dy)
                         else:
-                            self.selected_point.x = self.x
-                            self.selected_point.y = self.y
+                            self.selected_point.x = x
+                            self.selected_point.y = y
                         # ReDraw Polyline
                         self.outer.restoreSprite()
                         self.drawPolylineOnSprite()

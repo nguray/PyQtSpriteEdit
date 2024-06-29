@@ -15,15 +15,15 @@ class FillMode:
 
     def mousePressEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
-        self.x, self.y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
+        x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
-        if self.outer.InSprite(self.x, self.y):
+        if self.outer.InSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 self.outer.backupSprite()
                 # Get Target Color
-                iTargetColor = self.outer.sprite.pixel(self.x, self.y)
+                iTargetColor = self.outer.sprite.pixel(x, y)
                 iNewColor = self.outer.foregroundColor.rgba()
-                self.outer.floodFill(self.x, self.y, iTargetColor, iNewColor)
+                self.outer.floodFill(x, y, iTargetColor, iNewColor)
                 self.outer.repaint()
 
     def mouseReleaseEvent(self, mouseEvent):
