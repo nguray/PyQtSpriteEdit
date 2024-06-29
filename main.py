@@ -83,9 +83,9 @@ class NewSpriteDlg(QtWidgets.QDialog):
         widthLabel = QtWidgets.QLabel('Width')
         widthLabel.setMinimumWidth(labelWidth)
         widthLabel.setMaximumWidth(labelWidth)
-        self.widthEdit = QtWidgets.QLineEdit('32')
-        self.widthEdit.setMaxLength(4)
-        self.widthEdit.setMaximumWidth(50)
+        self.widthEdit = QtWidgets.QSpinBox()
+        self.widthEdit.setValue(32)
+        self.widthEdit.setMinimumWidth(64)
         hBoxLayout1.addStretch()
         hBoxLayout1.addWidget(widthLabel,0,QtCore.Qt.AlignmentFlag.AlignLeft)
         hBoxLayout1.addWidget(self.widthEdit,0,QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -95,9 +95,9 @@ class NewSpriteDlg(QtWidgets.QDialog):
         heightLabel = QtWidgets.QLabel('Height')
         heightLabel.setMinimumWidth(labelWidth)
         heightLabel.setMaximumWidth(labelWidth)
-        self.heightEdit = QtWidgets.QLineEdit('32')
-        self.heightEdit.setMaxLength(4)
-        self.heightEdit.setMaximumWidth(50)
+        self.heightEdit = QtWidgets.QSpinBox()
+        self.heightEdit.setValue(32)
+        self.heightEdit.setMinimumWidth(64)
         hBoxLayout2.addStretch()
         hBoxLayout2.addWidget(heightLabel,0,QtCore.Qt.AlignmentFlag.AlignLeft)
         hBoxLayout2.addWidget(self.heightEdit,0,QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -145,40 +145,9 @@ class MyWindow(QtWidgets.QMainWindow):
         d.setModal(True)
         if d.exec_():
             print(f'{d.imageWidth},{d.imageHeight}')
-            self.editarea.initSprite(d.imageWidth,d.imageHeight)
-            self.editarea.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
-            w, _ = self.editarea.computeSize()
-            self.spriteBarX = w + 16
-            self.hbox.setStretch(1, w+4)
+            self.spritebar.newSprite( d.imageWidth, d.imageHeight)
+            self.editarea.setEditSprite(self.spritebar.getCurSrpite())
             self.repaint()
-
-    def newFile16(self):
-        """
-        """
-        self.filename = ""
-        self.editarea.init16Sprite()
-        w, _ = self.editarea.computeSize()
-        self.spriteBarX = w + 16
-        self.hbox.setStretch(1, 20)
-        self.repaint()
-
-    def newFile32(self):
-        """
-        """
-        self.filename = ""
-        self.editarea.init32Sprite()
-        w, _ = self.editarea.computeSize()
-        self.spriteBarX = w + 16
-        self.hbox.setStretch(1, 36)
-        self.repaint()
-
-    def newFile64(self):
-        self.filename = ""
-        self.editarea.init64Sprite()
-        w, _ = self.editarea.computeSize()
-        self.spriteBarX = w + 16
-        self.hbox.setStretch(1, 68)
-        self.repaint()
 
     def openFile(self):
         """ Load a sprite image """

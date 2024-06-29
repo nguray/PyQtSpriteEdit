@@ -48,9 +48,7 @@ class MyEditArea(QtWidgets.QWidget):
         self.nbRowPix = 32
         self.nbColumnPix = 32
 
-        self.sprite = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-        self.sprite_bak = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-        self.sprite_cpy = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
+        self.initSprite(32,32)
 
         self.CurEditModeObj = None
         
@@ -76,7 +74,6 @@ class MyEditArea(QtWidgets.QWidget):
             myCursorLine, myCursorRectangle, myCursorEllipse, myCursorFill
         ]
 
-        self.init32Sprite()
 
         selectRectModeAction = QtWidgets.QAction(QtGui.QIcon('SelectRect.png'), 'Select',
                                        self)
@@ -127,34 +124,6 @@ class MyEditArea(QtWidgets.QWidget):
         self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
         self.sprite_bak = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
         self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
-
-    def init32Sprite(self):
-        self.pixSize = 12
-        self.nbRowPix = 32
-
-        self.nbColumnPix = 32
-        self.sprite = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-        self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
-        self.sprite_bak = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-        self.sprite_cpy = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
-
-    def init16Sprite(self):        
-        self.pixSize = 24
-        self.nbRowPix = 16
-        self.nbColumnPix = 16
-        self.sprite = QtGui.QImage(16, 16, QtGui.QImage.Format_ARGB32)
-        self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
-        self.sprite_bak = QtGui.QImage(16, 16, QtGui.QImage.Format_ARGB32)
-        self.sprite_cpy = QtGui.QImage(16, 16, QtGui.QImage.Format_ARGB32)
-
-    def init64Sprite(self):
-        self.pixSize = 8
-        self.nbRowPix = 64
-        self.nbColumnPix = 64
-        self.sprite = QtGui.QImage(64, 64, QtGui.QImage.Format_ARGB32)
-        self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
-        self.sprite_bak = QtGui.QImage(64, 64, QtGui.QImage.Format_ARGB32)
-        self.sprite_cpy = QtGui.QImage(64, 64, QtGui.QImage.Format_ARGB32)
 
     def contextMenuEvent(self, event):
         """

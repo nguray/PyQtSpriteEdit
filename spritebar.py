@@ -87,6 +87,13 @@ class SpriteBar(QtWidgets.QWidget):
                 y = i * self.cell_size + self.cell_size/2 - s.height()/2 + 4
                 qp.drawImage(QtCore.QPoint(int(x), int(y)), s)
 
+    def newSprite(self, w, h):
+        '''
+        '''
+        self.list_sprites[self.current_sprite] = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
+        self.list_sprites[self.current_sprite].fill(QtGui.qRgba(0, 0, 0, 0))
+        self.list_sprites_names[self.current_sprite] = ""
+
     def loadSprite(self, fileName):
         '''
         '''
