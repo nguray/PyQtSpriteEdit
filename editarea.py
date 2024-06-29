@@ -138,7 +138,7 @@ class MyEditArea(QtWidgets.QWidget):
         self.sprite_bak = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
         self.sprite_cpy = QtGui.QImage(32, 32, QtGui.QImage.Format_ARGB32)
 
-    def init16Sprite(self):
+    def init16Sprite(self):        
         self.pixSize = 24
         self.nbRowPix = 16
         self.nbColumnPix = 16
@@ -167,6 +167,7 @@ class MyEditArea(QtWidgets.QWidget):
 
         # # Afficher le context menu
         # action = menu.exec_(self.mapToGlobal(event.pos()))
+        
 
         # # Traiter le choix de l'utilisateur
         # for m, a in enumerate(self.editActions):
@@ -180,7 +181,7 @@ class MyEditArea(QtWidgets.QWidget):
         # --
         self.repaint()
 
-    def setEditMode(self, m):
+    def setEditMode(self, m):        
         """
         """
         if self.edit_mode != m:
@@ -201,6 +202,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def changeBackColor(self, c):
         self.backgroundColor = c
+        
 
     def computeSize(self):
         w = self.nbColumnPix * self.pixSize + 1
@@ -220,7 +222,8 @@ class MyEditArea(QtWidgets.QWidget):
 
     def mouseToPixCoord(self, mx, my):
         x = int(mx / self.pixSize)
-        y = int(my / self.pixSize)
+        y = int(my / self.pixSize)        
+
         return x, y
 
     def pixToMouseCoord(self, px, py):
@@ -236,7 +239,8 @@ class MyEditArea(QtWidgets.QWidget):
                 px = x * self.pixSize + 1
                 icol = self.sprite.pixel(x, y)
                 color.setRgba(icol)
-                qp.setPen(color)
+                qp.setPen(color)        
+
                 qp.setBrush(color)
                 qp.drawRect(px, py, self.pixSize - 2, self.pixSize - 2)
 
@@ -272,7 +276,7 @@ class MyEditArea(QtWidgets.QWidget):
 
     def doUndo(self):
         """
-        """
+        """  
         self.restoreSprite()
         self.CurEditModeObj.resetMode()
 
@@ -341,6 +345,7 @@ class MyEditArea(QtWidgets.QWidget):
             qp.drawImage(QtCore.QRect(0, 0, w, h), self.sprite_cpy,
                          QtCore.QRect(0, 0, w, h))
             qp.end()
+        
 
     def floodFill(self, x0, y0, iTargetColor, iNewColor):
         """
@@ -389,6 +394,7 @@ class MyEditArea(QtWidgets.QWidget):
         self.cursorPosChanged.emit(self.x, self.y)
 
     def doMirrorHorizontal(self):
+
         """
         """
         #
@@ -407,7 +413,8 @@ class MyEditArea(QtWidgets.QWidget):
         self.repaint()
 
     def doMirrorVertical(self):
-        """
+        """        }
+
         """
         #
         self.CurEditModeObj.resetMode()
@@ -422,6 +429,7 @@ class MyEditArea(QtWidgets.QWidget):
                 self.sprite.setPixel(x, i, c1)
                 self.sprite.setPixel(x, w - i, c0)
         #
+
         self.repaint()
 
     def doRotate90Clock(self):
@@ -454,6 +462,7 @@ class MyEditArea(QtWidgets.QWidget):
         #
         self.repaint()
 
+
     def setEditSprite(self, sprite):
         """
         """
@@ -485,9 +494,22 @@ class MyEditArea(QtWidgets.QWidget):
 
         qp.begin(self)
 
-        # size = self.size()
-        # w = size.width()
-        # h = size.height()
+
+        size = self.size()
+        w = size.width()
+        h = size.height()
+
+        if w>h:
+            if self.nbRowPix>self.nbColumnPix:
+                self.pixSize = int(h/self.nbRowPix)
+            else:
+               self.pixSize = int(h/self.nbColumnPix)
+        else:
+            if self.nbRowPix>self.nbColumnPix:
+                self.pixSize = int(w/self.nbRowPix)
+            else:
+                self.pixSize = int(w/self.nbColumnPix)
+            
 
         self.drawGrid(qp)
 

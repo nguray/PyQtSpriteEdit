@@ -22,11 +22,14 @@ class SpriteBar(QtWidgets.QWidget):
         '''
         QtWidgets.QWidget.__init__(self, parent)
 
+        self.setMinimumWidth(48)
+        self.setMaximumWidth(48)
+
         self.list_sprites = []
         self.list_sprites_names = []
         self.nb_cells = 8
         self.current_sprite = 0
-        self.cell_size = 40
+        self.cell_size = 48
 
         for i in range(0, self.nb_cells):
             if (i == 0):

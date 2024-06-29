@@ -66,7 +66,6 @@ class NewSpriteDlg(QtWidgets.QDialog):
         labelWidth = rect1.width() if rect1.width()>rect2.width() else rect1.width()
 
         imageFrame = QtWidgets.QGroupBox('Image')
-        #imageFrame.setStyleSheet("QGroupBox::title {subcontrol-origin: margin;subcontrol-position: top left;padding: 5 5px;font-size: 18px;font-weight: bold;}"
         imageFrame.setStyleSheet(
                 'QGroupBox {'
                  'border: 1px solid rgb(120,120,120);'
@@ -76,32 +75,32 @@ class NewSpriteDlg(QtWidgets.QDialog):
                  'subcontrol-origin: margin;'
                  'left: 7px;'
                  'padding: -10px 5px 0px 5px;}')
-        
     
         vBoxLayout = QtWidgets.QVBoxLayout()
         vBoxLayout1 = QtWidgets.QVBoxLayout()
 
-
         hBoxLayout1 = QtWidgets.QHBoxLayout()
         widthLabel = QtWidgets.QLabel('Width')
         widthLabel.setMinimumWidth(labelWidth)
+        widthLabel.setMaximumWidth(labelWidth)
         self.widthEdit = QtWidgets.QLineEdit('32')
         self.widthEdit.setMaxLength(4)
         self.widthEdit.setMaximumWidth(50)
         hBoxLayout1.addStretch()
         hBoxLayout1.addWidget(widthLabel,0,QtCore.Qt.AlignmentFlag.AlignLeft)
-        hBoxLayout1.addWidget(self.widthEdit,0,QtCore.Qt.AlignmentFlag.AlignRight)
+        hBoxLayout1.addWidget(self.widthEdit,0,QtCore.Qt.AlignmentFlag.AlignLeft)
         hBoxLayout1.addStretch()
 
         hBoxLayout2 = QtWidgets.QHBoxLayout()
         heightLabel = QtWidgets.QLabel('Height')
         heightLabel.setMinimumWidth(labelWidth)
+        heightLabel.setMaximumWidth(labelWidth)
         self.heightEdit = QtWidgets.QLineEdit('32')
         self.heightEdit.setMaxLength(4)
         self.heightEdit.setMaximumWidth(50)
         hBoxLayout2.addStretch()
         hBoxLayout2.addWidget(heightLabel,0,QtCore.Qt.AlignmentFlag.AlignLeft)
-        hBoxLayout2.addWidget(self.heightEdit,0,QtCore.Qt.AlignmentFlag.AlignRight)
+        hBoxLayout2.addWidget(self.heightEdit,0,QtCore.Qt.AlignmentFlag.AlignLeft)
         hBoxLayout2.addStretch()
 
         vBoxLayout1.addStretch()
@@ -476,11 +475,6 @@ class MyWindow(QtWidgets.QMainWindow):
         self.hbox = QtWidgets.QHBoxLayout()
         self.hbox.addWidget(self.editarea)
         self.hbox.addWidget(self.spritebar)
-
-        # -- Zone edition
-        self.hbox.setStretch(0, w)
-        # -- Sprite barre
-        self.hbox.setStretch(1, 40)
 
         vbox = QtWidgets.QVBoxLayout()
         vbox.addLayout(self.hbox)
