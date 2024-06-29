@@ -47,7 +47,7 @@ class MyEditArea(QtWidgets.QWidget):
         self.pixSize = 12
         self.nbRowPix = 32
         self.nbColumnPix = 32
-
+        self.sprite_cpy = None
         self.initSprite(32,32)
 
         self.CurEditModeObj = None
@@ -123,7 +123,6 @@ class MyEditArea(QtWidgets.QWidget):
         self.sprite = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
         self.sprite.fill(QtGui.qRgba(0, 0, 0, 0))
         self.sprite_bak = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
-        self.sprite_cpy = QtGui.QImage(w, h, QtGui.QImage.Format_ARGB32)
 
     def contextMenuEvent(self, event):
         """
