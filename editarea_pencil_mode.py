@@ -18,7 +18,7 @@ class PencilMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 self.outer.backupSprite()
                 self.outer.sprite.setPixel(x, y, self.outer.foregroundColor.rgba())
@@ -40,7 +40,7 @@ class PencilMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QtGui.QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 self.outer.sprite.setPixel(x, y,
                                            self.outer.foregroundColor.rgba())

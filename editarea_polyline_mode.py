@@ -58,7 +58,7 @@ class PolyLineMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if modifiers & QtCore.Qt.ShiftModifier:
                     pass
@@ -95,7 +95,7 @@ class PolyLineMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 if self.selected_point is not None:
                     if (self.selected_point.x !=x) or (self.selected_point.y != y):
@@ -119,7 +119,7 @@ class PolyLineMode:
 
     def drawLivePolyLine(self, qp):
         for pt in self.list_points:
-            if self.outer.InSprite(pt.x, pt.y):
+            if self.outer.inSprite(pt.x, pt.y):
                 x1, y1 = self.outer.pixToMouseCoord(pt.x, pt.y)
                 p1 = QtGui.QPen(QtGui.QColor(0, 0, 255, 255), 2)
                 qp.setPen(p1)

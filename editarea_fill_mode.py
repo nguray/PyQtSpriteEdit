@@ -17,7 +17,7 @@ class FillMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 self.outer.backupSprite()
                 # Get Target Color

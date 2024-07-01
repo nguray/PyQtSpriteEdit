@@ -251,7 +251,7 @@ class MyEditArea(QtWidgets.QWidget):
             self.spriteCopy.fill(QtGui.qRgba(0, 0, 0, 0))
             qp = QtGui.QPainter()
             # Faire une copie de zone
-            qp.begin(self.sprite_cpy)
+            qp.begin(self.spriteCopy)
             qp.drawImage(
                 QtCore.QRect(0, 0, w, h), self.sprite,
                 QtCore.QRect(self.curEditModeObj.select_rect.left,

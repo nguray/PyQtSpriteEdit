@@ -81,7 +81,7 @@ class SelectMode:
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         # modifiers = QApplication.keyboardModifiers()
 
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 match self.select_rect.mode:
                     case 0:
@@ -134,7 +134,7 @@ class SelectMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         #modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
 
             match self.select_rect.mode:
                 case 0:
@@ -176,13 +176,13 @@ class SelectMode:
                                 self.select_rect_bottom_bak = self.select_rect.bottom
                                 self.outer.restoreSprite()
                                 qp = QtGui.QPainter()
-                                w = self.outer.sprite_cpy.width()
-                                h = self.outer.sprite_cpy.height()
+                                w = self.outer.spriteCopy.width()
+                                h = self.outer.spriteCopy.height()
                                 qp.begin(self.outer.sprite)
                                 qp.drawImage(
                                     QtCore.QRect(self.select_rect.left, 
                                                 self.select_rect.top,
-                                                w, h), self.outer.sprite_cpy,
+                                                w, h), self.outer.spriteCopy,
                                     QtCore.QRect(0, 0, w, h))
                                 qp.end()
                                 self.outer.repaint()

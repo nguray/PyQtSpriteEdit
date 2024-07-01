@@ -71,7 +71,7 @@ class RectangleMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
 
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             if mouseEvent.buttons() == QtCore.Qt.LeftButton:
                 match self.select_rect.mode:
                     case 0:
@@ -124,7 +124,7 @@ class RectangleMode:
         mousePos = mouseEvent.pos()
         x, y = self.outer.mouseToPixCoord(mousePos.x(), mousePos.y())
         #modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if self.outer.InSprite(x, y):
+        if self.outer.inSprite(x, y):
             match self.select_rect.mode:
                 case 0:
                     if (x!=self.select_rect_right_bak or
