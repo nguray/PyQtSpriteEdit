@@ -75,7 +75,7 @@ class NewSpriteDlg(QtWidgets.QDialog):
                  'subcontrol-origin: margin;'
                  'left: 7px;'
                  'padding: -10px 5px 0px 5px;}')
-    
+
         vBoxLayout = QtWidgets.QVBoxLayout()
         vBoxLayout1 = QtWidgets.QVBoxLayout()
 

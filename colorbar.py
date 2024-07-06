@@ -133,6 +133,13 @@ class MyColorBar(QtWidgets.QWidget):
                 offSet = self.cellSize // 2
                 self.dragColorRect.setRect(x-offSet,y-offSet,self.cellSize,self.cellSize)
                 self.repaint()
+            elif self.selectedBackColor.contains(x,y):
+                c = self.selectedForeColor.color
+                self.selectedForeColor.color = self.selectedBackColor.color
+                self.selectedBackColor.color = c
+                self.foreColorChanged.emit(self.selectedForeColor.color)
+                self.backColorChanged.emit(self.selectedBackColor.color)
+                self.repaint()
             else:
                 for lin in self.palette.items():
                     for colorRect in lin[1]:
@@ -141,13 +148,12 @@ class MyColorBar(QtWidgets.QWidget):
                                 self.selectedForeColor.color = colorRect.color
                                 self.foreColorChanged.emit(self.selectedForeColor.color)
                                 self.repaint()
-                                return
                             elif mouseEvent.buttons() == QtCore.Qt.RightButton:
                                 self.selectedBackColor.color = colorRect.color
                                 self.backColorChanged.emit(self.selectedBackColor.color)
                                 self.repaint()
-                                return
-                            
+
+
     def mouseMoveEvent(self, mouseEvent):
         mousePos = mouseEvent.pos()
         if self.fDragForegroundColor:
